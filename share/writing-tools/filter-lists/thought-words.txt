@@ -1,0 +1,11 @@
+believes
+desires
+hates
+imagines
+knows
+loves
+realizes
+remembers
+thinks
+understands
+wants
