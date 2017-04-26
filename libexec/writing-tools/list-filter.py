@@ -1,18 +1,19 @@
 #!/usr/bin/python3
 
 import re
+from os import listdir
 from os import path
 from sys import argv
 
-def printHelp(name):
+def printHelp(name, defaultLists):
     name = path.basename(name)
     print("{} - Detect troublesome words".format(name))
     print("{} [options] <file1> [<file2> ...]".format(name))
     print("\nOPTIONS")
-    print("  --help, -h       Display this help message")
+    print("  --help, -h       Display this help message and exit")
     print("  --lists=<lists>  Change the set of word lists.  <lists> should be a")
     print("                   comma-separated list of *builit-in* options to use.")
-    print("                   [Default: filter, thought, weasel]")
+    print("                   [Default: {}]".format(", ".join(str(l) for l in defaultLists)))
     print("  --list=<list>    Use a custom word list.  <list> should be a path to a text")
     print("                   file with one word per line.")
     print("  --               Stop processing options (required if files to parse match")
@@ -43,19 +44,33 @@ def parseWordLists(wordLists):
         addWords(filePath, words)
     return words
 
+def readDefaults():
+    global path
+
+    listDir = "{}/../../share/writing-tools/filter-lists".format(path.abspath(path.dirname(argv[0])))
+    files = listdir(listDir)
+    pattern = re.compile("^([a-z]+)-words.txt$")
+    ret = [ ]
+    for file in files:
+        m = pattern.search(file)
+        ret.append(m.group(1))
+    ret.sort()
+    return ret
+
 if len(argv) > 1:
     # default word lists
-    wordLists = ["thought", "filter", "weasel"]
+    defaultWordLists = readDefaults()
+    wordLists = defaultWordLists
     extraLists = [ ]
 
     index = 1
     # parse optoins
     while index < len(argv):
         if argv[index] == "--help":
-            printHelp(argv[0])
+            printHelp(argv[0], defaultWordLists)
             exit(0)
         elif argv[index] == "-h":
-            printHelp(argv[0])
+            printHelp(argv[0], defaultWordLists)
             exit(0)
         elif argv[index] == "--":
             break
