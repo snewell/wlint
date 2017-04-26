@@ -14,10 +14,12 @@ do_help() {
     ${CAT} <<EOF
 ${0} - Install writing tools
 
+${0} [--prefix=/path/to/install]
+
 OPTIONS
   -h, --help        Display this help message
 
-  --prefix <prefix> Install the tools to <prefix>.  This will override DESTDIR
+  --prefix=<prefix> Install the tools to <prefix>.  This will override DESTDIR
                     if both are set.  Defaults to ${prefix}.
 
 ENVIRONMENT
