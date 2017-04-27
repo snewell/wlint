@@ -2,23 +2,25 @@
 
 CAT=/bin/cat
 CUT=/usr/bin/cut
+BASENAME=/usr/bin/basename
 DIRNAME=/usr/bin/dirname
 ECHO=/bin/echo
 LS=/bin/ls
 PWD=/bin/pwd
 
-basename=$(${DIRNAME} "${0}")
-first=$(${ECHO} ${basename} | ${CUT} -b 1)
+dir=$(${DIRNAME} "${0}")
+first=$(${ECHO} ${dir} | ${CUT} -b 1)
 if [ "${first}" != "/" ]; then
-    basename="$(${PWD})/${basename}"
+    dir="$(${PWD})/${dir}"
 fi
-toolsDir="${basename}/../libexec/writing-tools"
+toolsDir="${dir}/../libexec/writing-tools"
 
 do_help() {
+    local=$(${BASENAME} ${0})
     ${CAT} <<EOF
-${0} - Front-end to writing-tools
+${local} - Front-end to writing-tools
 
-${0} <tool> [tool options]
+${local} <tool> [tool options]
 
 OPTIONS
   -h, --help  Display this help message

@@ -90,7 +90,7 @@ done
 ${ECHO} "Instaling to \"${prefix}\""
 
 binFiles=" \
-    bin/writing-tools.sh \
+    bin/wtool.sh \
 "
 libexecFiles=" \
     libexec/writing-tools/list-filter.py \
