@@ -4,6 +4,7 @@ import re
 from os import listdir
 from os import path
 from sys import argv
+from sys import stderr
 
 def printHelp(name, defaultLists):
     name = path.basename(name)
@@ -12,7 +13,7 @@ def printHelp(name, defaultLists):
     print("\nOPTIONS")
     print("  --help, -h       Display this help message and exit")
     print("  --lists=<lists>  Change the set of word lists.  <lists> should be a")
-    print("                   comma-separated list of *builit-in* options to use.")
+    print("                   comma-separated list of *builit-in* lists to use.")
     print("                   [Default: {}]".format(", ".join(str(l) for l in defaultLists)))
     print("  --list=<list>    Use a custom word list.  <list> should be a path to a text")
     print("                   file with one word per line.")
@@ -53,13 +54,15 @@ def readDefaults():
     ret = [ ]
     for file in files:
         m = pattern.search(file)
-        ret.append(m.group(1))
+        if m:
+            ret.append(m.group(1))
     ret.sort()
     return ret
 
+# default word lists
+defaultWordLists = readDefaults()
+
 if len(argv) > 1:
-    # default word lists
-    defaultWordLists = readDefaults()
     wordLists = defaultWordLists
     extraLists = [ ]
 
@@ -91,17 +94,25 @@ if len(argv) > 1:
     for wordList in extraLists:
         addWords(wordList, words)
 
+    missingFiles = [ ]
     # We should only have files at this point
     while index < len(argv):
-        with open(argv[index], 'r') as readFile:
-            lineNumber = 0
-            for line in readFile:
-                lineNumber += 1
-                for word, pattern in words.items():
-                    match = pattern.search(line)
-                    while match:
-                        print("{} {} ({}:{})".format(argv[index], word, lineNumber, match.start()))
-                        match = pattern.search(line, match.end())
+        try:
+            with open(argv[index], 'r') as readFile:
+                lineNumber = 0
+                for line in readFile:
+                    lineNumber += 1
+                    for word, pattern in words.items():
+                        match = pattern.search(line)
+                        while match:
+                            print("{} {} ({}:{})".format(argv[index], word, lineNumber, match.start()))
+                            match = pattern.search(line, match.end())
+        except FileNotFoundError:
+            missingFiles.append(argv[index])
         index += 1
+
+    if len(missingFiles) > 0:
+        print("Error opening files: {}".format(missingFiles), file=stderr)
+        exit(1)
 else:
-    printHelp(argv[0])
+    printHelp(argv[0], defaultWordLists)
