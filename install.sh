@@ -6,12 +6,11 @@ CUT=/usr/bin/cut
 DIRNAME=/usr/bin/dirname
 ECHO=/bin/echo
 INSTALL=/usr/bin/install
-MKDIR=/bin/mkdir
 
 prefix=/usr/local
 
 do_help() {
-    ${CAT} <<EOF
+	${CAT} <<EOF
 ${0} - Install writing tools
 
 ${0} [--prefix=/path/to/install]
@@ -32,73 +31,73 @@ EOF
 basedir=$(${DIRNAME} "${0}")
 
 install_file() {
-    file="${1}"
-    dest="${2}"
-    mode="${3}"
+	file="${1}"
+	dest="${2}"
+	mode="${3}"
 
-    ${INSTALL} -m ${mode} "${file}" "${prefix}/${dest}"
+	${INSTALL} -m ${mode} "${file}" "${prefix}/${dest}"
 }
 
 install_exec() {
-    dest=$(${BASENAME} "${1}" | ${CUT} -d . -f 1)
-    install_file "${1}" "${2}/${dest}" "0755"
+	dest=$(${BASENAME} "${1}" | ${CUT} -d . -f 1)
+	install_file "${1}" "${2}/${dest}" "0755"
 }
 
 install_share() {
-    dest=$(${BASENAME} "${1}")
-    install_file "${1}" "${2}/${dest}" "0644"
+	dest=$(${BASENAME} "${1}")
+	install_file "${1}" "${2}/${dest}" "0644"
 }
 
 install_directory() {
-    ${MKDIR} -m 0755 -p "${prefix}/${1}"
+	${INSTALL} -m 0755 -d "${prefix}/${1}"
 }
 
 install_helper() {
-    runner="${1}"
-    path="${2}"
-    install_directory "${path}"
+	runner="${1}"
+	path="${2}"
+	install_directory "${path}"
 
-    shift 2
-    for f in ${@}; do
-        "${runner}" "${f}" "${path}"
-    done
+	shift 2
+	for f in ${@}; do
+		"${runner}" "${f}" "${path}"
+	done
 }
 
 # Check for environmental overrides
 if [ -n "${DESTDIR}" ]; then
-    prefix=${DESTDIR}
+	prefix=${DESTDIR}
 fi
 
 for arg in ${@}; do
-    case "${arg}" in
-      "--help")
-        do_help
-        exit ${?}
-        ;;
+	case "${arg}" in
+	"--help")
+		do_help
+		exit ${?}
+		;;
 
-      "-h")
-        do_help
-        exit ${?}
-        ;;
+	"-h")
+		do_help
+		exit ${?}
+		;;
 
-      "--prefix="*)
-        prefix=$(${ECHO} ${arg} | ${CUT} -d = -f 2)
-        ;;
-    esac
+	"--prefix="*)
+		prefix=$(${ECHO} ${arg} | ${CUT} -d = -f 2)
+		;;
+	esac
 done
 
 ${ECHO} "Instaling to \"${prefix}\""
 
 binFiles=" \
-    bin/wtool.sh \
+	bin/wtool.sh \
 "
 libexecFiles=" \
-    libexec/writing-tools/list-filter.py \
+	libexec/writing-tools/list-filter.py \
 "
 filterLists=" \
-   share/writing-tools/filter-lists/filter-words.txt \
-   share/writing-tools/filter-lists/thought-words.txt \
-   share/writing-tools/filter-lists/weasel-words.txt \
+	share/writing-tools/filter-lists/filter-words.txt \
+	share/writing-tools/filter-lists/thought-words.txt \
+	share/writing-tools/filter-lists/weasel-words.txt \
 "
 
 install_helper install_exec "bin" ${binFiles}

@@ -11,13 +11,13 @@ PWD=/bin/pwd
 dir=$(${DIRNAME} "${0}")
 first=$(${ECHO} ${dir} | ${CUT} -b 1)
 if [ "${first}" != "/" ]; then
-    dir="$(${PWD})/${dir}"
+	dir="$(${PWD})/${dir}"
 fi
 toolsDir="${dir}/../libexec/writing-tools"
 
 do_help() {
-    local=$(${BASENAME} ${0})
-    ${CAT} <<EOF
+	local=$(${BASENAME} ${0})
+	${CAT} <<EOF
 ${local} - Front-end to writing-tools
 
 ${local} <tool> [tool options]
@@ -30,39 +30,39 @@ EOF
 }
 
 do_list() {
-    for tool in $(${LS} "${toolsDir}"); do
-        if [ -x "${toolsDir}/${tool}" ]; then
-            ${ECHO} "${tool}"
-        fi
-    done
+	for tool in $(${LS} "${toolsDir}"); do
+		if [ -x "${toolsDir}/${tool}" ]; then
+			${ECHO} "${tool}"
+		fi
+	done
 }
 
 
 if [ ${#} -gt 0 ]; then
-    case "${1}" in
-      "--help")
-        do_help
-        exit ${?}
-        ;;
+	case "${1}" in
+	"--help")
+		do_help
+		exit ${?}
+		;;
 
-      "-h")
-        do_help
-        exit ${?}
-        ;;
+	"-h")
+		do_help
+		exit ${?}
+		;;
 
-      "--list")
-        do_list
-        exit ${?}
-        ;;
-    esac
-    tool="${toolsDir}/${1}"
-    if [ -x "${tool}" ]; then
-        shift
-        ${tool} ${@}
-    else
-        ${ECHO} "\"${1}\" - Unknown command" >&2
-        exit 1
-    fi
+	"--list")
+		do_list
+		exit ${?}
+		;;
+	esac
+	tool="${toolsDir}/${1}"
+	if [ -x "${tool}" ]; then
+		shift
+		${tool} ${@}
+	else
+		${ECHO} "\"${1}\" - Unknown command" >&2
+		exit 1
+	fi
 else
-    do_help
+	do_help
 fi
