@@ -14,7 +14,13 @@ scripts are written in either :code:`/bin/sh` (assumes a typical collection of
 standard command line tools) and Python 3 (assumed to be
 :code:`/usr/bin/python3`).
 
-Using
+Installing
+----------
+:code:`sh install.sh` Installs to the default prefix [:code:`/usr/local`]
+
+:code:`sh install.sh --prefix=/path/to/prefix` Installs to a custom prefix
+
+Usage
 -----
 writing-tools follows the pattern of tools like :code:`git` and
 :code:`apt-get`: there's a single front-end (:code:`wtool`) to launch other
@@ -28,8 +34,3 @@ Documentation for the other tools is available with the :code:`-h` or :code:`--h
    usage: list-filter [-h] [--lists LISTS] [--list LIST] [--file FILE]
                       [file [file ...]]
 
-Installing
-----------
-:code:`sh install.sh` Installs to the default prefix [:code:`/usr/local`]
-
-:code:`sh install.sh --prefix=/path/to/prefix` Installs to a custom prefix
