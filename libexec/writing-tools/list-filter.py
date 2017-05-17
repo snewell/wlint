@@ -22,7 +22,12 @@ def parseWordLists(wordLists):
 
 	for wordList in wordLists:
 		filePath = "{}/{}-words.txt".format(listDir, wordList)
-		addWords(filePath, words)
+		try:
+			addWords(filePath, words)
+		except FileNotFoundError:
+			# Assuming no built in lists is the exception, not the rule.
+			if wordList != "":
+				print("Invalid list: {}".format(wordList), file=stderr)
 	return words
 
 def readDefaults():
@@ -71,7 +76,10 @@ if len(args.files) > 0 or len(args.file) > 0:
 
 	words = parseWordLists(args.lists)
 	for wordList in args.list:
-		addWords(wordList, words)
+		try:
+			addWords(wordList, words)
+		except FileNotFoundError:
+			print("Invalid list: {}".format(wordList), file=stderr)
 
 	missingFiles = [ ]
 	parseFiles(args.files, words, missingFiles)
