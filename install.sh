@@ -94,6 +94,10 @@ binFiles=" \
 libexecFiles=" \
 	libexec/writing-tools/list-filter.py \
 "
+libWtoolLists=" \
+	lib/wtool/__init__.py \
+	lib/wtool/filter.py \
+"
 filterLists=" \
 	share/writing-tools/filter-lists/filter-words.txt \
 	share/writing-tools/filter-lists/thought-words.txt \
@@ -101,5 +105,6 @@ filterLists=" \
 "
 
 install_helper install_exec "bin" ${binFiles}
+install_helper install_share "lib/wtool/" ${libWtoolLists}
 install_helper install_exec "libexec/writing-tools" ${libexecFiles}
 install_helper install_share "share/writing-tools/filter-lists" ${filterLists}

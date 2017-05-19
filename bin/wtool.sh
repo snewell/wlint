@@ -58,6 +58,7 @@ if [ ${#} -gt 0 ]; then
 	tool="${toolsDir}/${1}"
 	if [ -x "${tool}" ]; then
 		shift
+		export PYTHONPATH="${dir}/../lib:${PYTHONPATH}"
 		${tool} ${@}
 	else
 		${ECHO} "\"${1}\" - Unknown command" >&2

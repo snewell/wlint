@@ -4,20 +4,19 @@ import argparse
 import re
 from os import listdir
 from os import path
+from wtool import filter
 from sys import argv
 from sys import stderr
 
 def addWords(path, words):
 	with open(path, "r") as inputList:
 		for line in inputList:
-			word = line[:-1]
-			pattern = re.compile("\\b{}\\b".format(word), re.IGNORECASE)
-			words[word] = pattern
+			words.addWord(line[:-1])
 
 def parseWordLists(wordLists):
 	global path
 
-	words = { }
+	words = filter.WordList()
 	listDir = "{}/../../share/writing-tools/filter-lists".format(path.abspath(path.dirname(argv[0])))
 
 	for wordList in wordLists:
@@ -44,18 +43,10 @@ def readDefaults():
 	ret.sort()
 	return ",".join(ret)
 
-def parseFiles(files, words, missing):
+def parseFiles(files, filter, missing):
 	for f in files:
 		try:
-			with open(f, 'r') as readFile:
-					lineNumber = 0
-					for line in readFile:
-						lineNumber += 1
-						for word, pattern in words.items():
-							match = pattern.search(line)
-							while match:
-								print("{} {} ({}:{})".format(f, word, lineNumber, match.start()))
-								match = pattern.search(line, match.end())
+			filter.parseFile(f, lambda file, word, line, col: print("{} {} ({}:{})".format(file, word, line, col)))
 		except FileNotFoundError:
 			missing.append(f)
 
@@ -81,9 +72,10 @@ if len(args.files) > 0 or len(args.file) > 0:
 		except FileNotFoundError:
 			print("Invalid list: {}".format(wordList), file=stderr)
 
+	filter = filter.Filter(words)
 	missingFiles = [ ]
-	parseFiles(args.files, words, missingFiles)
-	parseFiles(args.file, words, missingFiles)
+	parseFiles(args.files, filter, missingFiles)
+	parseFiles(args.file, filter, missingFiles)
 
 	if len(missingFiles) > 0:
 		print("Error opening files: {}".format(missingFiles), file=stderr)
