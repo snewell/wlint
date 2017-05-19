@@ -8,32 +8,30 @@ from wtool import filter
 from sys import argv
 from sys import stderr
 
-def addWords(path, words):
-	with open(path, "r") as inputList:
-		for line in inputList:
-			words.addWord(line[:-1])
+def parseWordLists(path, wordLists):
+	"""Parse built-in word lists for filtering.
 
-def parseWordLists(wordLists):
-	global path
-
+	Arguments:
+	path -- the path where built-in strings are stored
+	wordLists -- the files to read from path"""
 	words = filter.WordList()
-	listDir = "{}/../../share/writing-tools/filter-lists".format(path.abspath(path.dirname(argv[0])))
 
 	for wordList in wordLists:
-		filePath = "{}/{}-words.txt".format(listDir, wordList)
+		filePath = "{}/{}-words.txt".format(path, wordList)
 		try:
-			addWords(filePath, words)
+			words.addWords(filePath)
 		except FileNotFoundError:
 			# Assuming no built in lists is the exception, not the rule.
 			if wordList != "":
 				print("Invalid list: {}".format(wordList), file=stderr)
 	return words
 
-def readDefaults():
-	global path
+def readDefaults(path):
+	"""Get a list of built-in word lists.
 
-	listDir = "{}/../../share/writing-tools/filter-lists".format(path.abspath(path.dirname(argv[0])))
-	files = listdir(listDir)
+	Arguments:
+	path -- the path where built-in strings are stored"""
+	files = listdir(path)
 	pattern = re.compile("^([a-z]+)-words.txt$")
 	ret = [ ]
 	for file in files:
@@ -43,14 +41,22 @@ def readDefaults():
 	ret.sort()
 	return ",".join(ret)
 
-def parseFiles(files, filter, missing):
+def parseFiles(files, filter, hits, missing):
+	"""Parse a list of files, searching for filtered words.
+
+	Arguments:
+	files -- a list of files to parse (each file should be a full path)
+	filter -- a Filter object
+	hits -- a list to store filter's matches
+	missing -- a list to store entires in files that don't exist"""
 	for f in files:
 		try:
-			filter.parseFile(f, lambda file, word, line, col: print("{} {} ({}:{})".format(file, word, line, col)))
+			filter.parseFile(f, lambda word, line, col: hits.append((f, word, line, col)))
 		except FileNotFoundError:
 			missing.append(f)
 
-defaultWordLists = readDefaults()
+listDir = "{}/../../share/writing-tools/filter-lists".format(path.abspath(path.dirname(argv[0])))
+defaultWordLists = readDefaults(listDir)
 
 parser = argparse.ArgumentParser(description="Detect troublesome words")
 parser.add_argument("--lists", help="Change the set of word lists.  This should be a comma-separated list of built-in lists.  [Default={}]".format(defaultWordLists),
@@ -65,17 +71,21 @@ args = parser.parse_args()
 if len(args.files) > 0 or len(args.file) > 0:
 	args.lists = args.lists.split(",")
 
-	words = parseWordLists(args.lists)
+	words = parseWordLists(listDir, args.lists)
 	for wordList in args.list:
 		try:
-			addWords(wordList, words)
+			words.addWords(wordList, words)
 		except FileNotFoundError:
 			print("Invalid list: {}".format(wordList), file=stderr)
 
 	filter = filter.Filter(words)
+	hits = [ ]
 	missingFiles = [ ]
-	parseFiles(args.files, filter, missingFiles)
-	parseFiles(args.file, filter, missingFiles)
+	parseFiles(args.files, filter, hits, missingFiles)
+	parseFiles(args.file, filter, hits, missingFiles)
+
+	for (file, word, line, col) in hits:
+		 print("{} {} ({}:{})".format(file, word, line, col))
 
 	if len(missingFiles) > 0:
 		print("Error opening files: {}".format(missingFiles), file=stderr)
