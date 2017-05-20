@@ -2,22 +2,32 @@
 
 import argparse
 from os import path
-from wtool import filter
 from sys import argv
 from sys import stderr
 
-listDir = "{}/../../share/writing-tools/filter-lists".format(path.abspath(path.dirname(argv[0])))
+from wtool import filter
+
+listDir = "{}/../../share/writing-tools/filter-lists" \
+            .format(path.abspath(path.dirname(argv[0])))
 defaultLists = filter.DirectoryLists(listDir)
 
 defaultListsStr = ",".join(defaultLists.files)
 parser = argparse.ArgumentParser(description="Detect troublesome words")
-parser.add_argument("--lists", help="Change the set of word lists.  This should be a comma-separated list of built-in lists.  [Default={}]".format(defaultListsStr),
+parser.add_argument("--lists", help="Change the set of word lists.  This "
+                                    "should be a comma-separated list of "
+                                    "built-in lists.  [Default={}]" \
+                                        .format(defaultListsStr),
                     default=defaultListsStr)
-parser.add_argument("--list", help="Use a custom word list.  The list should be a plain text file with one word per line.",
+parser.add_argument("--list", help="Use a custom word list.  The list should "
+                                   "be a plain text file with one word per "
+                                   "line.", action='append',
+                    default=[])
+parser.add_argument("--file", help="Process a file.  This is only necessary "
+                                   "if an input file matches an argument "
+                                   "(e.g., --help).",
                     action='append', default=[])
-parser.add_argument("--file", help="Process a file.  This is only necessary if an input file matches an argument (e.g., --help).",
-                    action='append', default=[])
-parser.add_argument("files", help="Files to process.", nargs='*', metavar="file")
+parser.add_argument("files", help="Files to process.", nargs='*',
+                    metavar="file")
 
 args = parser.parse_args()
 if len(args.files) > 0 or len(args.file) > 0:
@@ -39,13 +49,15 @@ if len(args.files) > 0 or len(args.file) > 0:
             """Parse a list of files, searching for filtered words.
 
             Arguments:
-            files -- a list of files to parse (each file should be a full path)
+            files -- a list of files to parse (each file should be a
+                     full path)
             filter -- a Filter object
             hits -- a list to store filter's matches
             missing -- a list to store entires in files that don't exist"""
             for f in files:
                 try:
-                    filter.parseFile(f, lambda word, line, col: hits.append((f, word, line, col)))
+                    filter.parseFile(f, lambda word, line, col: hits.append(
+                                           (f, word, line, col)))
                 except FileNotFoundError:
                     missing.append(f)
 

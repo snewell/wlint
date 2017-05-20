@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-import argparse
 import os
 import re
 
@@ -18,8 +17,8 @@ class WordList:
         self.words[word] = pattern
 
     def addWords(self, path):
-        """Add words from a file.  Each entry should be on a new line and is
-        treated as the literal entry.
+        """Add words from a file.  Each entry should be on a new line
+        and is treated as the literal entry.
 
         Arguments:
         path -- path of the file to parse"""
@@ -56,7 +55,8 @@ class DirectoryLists:
             try:
                 words.addWords(filePath)
             except FileNotFoundError:
-                raise ValueError("'{}' is not a built in list".format(wordList))
+                raise \
+                    ValueError("'{}' is not a built in list".format(wordList))
         return words
 
 class Filter:
@@ -73,7 +73,8 @@ class Filter:
 
         Arguments:
         path -- the file to parse
-        fn -- A function to invoke on each match.  Arguments are: word, lineNumber, column."""
+        fn -- A function to invoke on each match.  Arguments are: word,
+              lineNumber, column."""
         with open(path, 'r') as readFile:
             lineNumber = 0
             for line in readFile:
