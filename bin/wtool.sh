@@ -13,7 +13,7 @@ first=$(${ECHO} ${dir} | ${CUT} -b 1)
 if [ "${first}" != "/" ]; then
 	dir="$(${PWD})/${dir}"
 fi
-toolsDir="${dir}/../libexec/writing-tools"
+toolsDir="${dir}/../libexec/wtool"
 
 do_help() {
 	local=$(${BASENAME} ${0})

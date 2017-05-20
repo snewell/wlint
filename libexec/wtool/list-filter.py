@@ -7,7 +7,7 @@ from sys import stderr
 
 from wtool import filter
 
-listDir = "{}/../../share/writing-tools/filter-lists" \
+listDir = "{}/../../share/wtool/filter-lists" \
             .format(path.abspath(path.dirname(argv[0])))
 defaultLists = filter.DirectoryLists(listDir)
 

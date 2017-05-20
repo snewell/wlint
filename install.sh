@@ -92,19 +92,19 @@ binFiles=" \
 	bin/wtool.sh \
 "
 libexecFiles=" \
-	libexec/writing-tools/list-filter.py \
+	libexec/wtool/list-filter.py \
 "
 libWtoolLists=" \
 	lib/wtool/__init__.py \
 	lib/wtool/filter.py \
 "
 filterLists=" \
-	share/writing-tools/filter-lists/filter-words.txt \
-	share/writing-tools/filter-lists/thought-words.txt \
-	share/writing-tools/filter-lists/weasel-words.txt \
+	share/wtool/filter-lists/filter-words.txt \
+	share/wtool/filter-lists/thought-words.txt \
+	share/wtool/filter-lists/weasel-words.txt \
 "
 
 install_helper install_exec "bin" ${binFiles}
 install_helper install_share "lib/wtool/" ${libWtoolLists}
-install_helper install_exec "libexec/writing-tools" ${libexecFiles}
-install_helper install_share "share/writing-tools/filter-lists" ${filterLists}
+install_helper install_exec "libexec/wtool" ${libexecFiles}
+install_helper install_share "share/wtool/filter-lists" ${filterLists}
