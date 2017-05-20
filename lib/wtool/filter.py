@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import argparse
+import os
 import re
 
 class WordList:
@@ -25,6 +26,38 @@ class WordList:
         with open(path, "r") as inputList:
             for line in inputList:
                 self.addWord(line[:-1])
+
+class DirectoryLists:
+    """A collection of lists in a directory."""
+    def __init__(self, path):
+        """Constrcut a directory list.
+
+        Arguments:
+        path -- path to the directory"""
+        self.path = path
+        files = os.listdir(path)
+        pattern = re.compile("^([a-z]+)-words.txt$")
+        self.files = [ ]
+        for file in files:
+            m = pattern.search(file)
+            if m:
+                self.files.append(m.group(1))
+        self.files.sort()
+
+    def buildWordList(self, wordLists):
+        """Parse built-in word lists for filtering.
+
+        Arguments:
+        wordLists -- the subset of built-in lists to use"""
+        words = WordList()
+
+        for wordList in wordLists:
+            filePath = "{}/{}-words.txt".format(self.path, wordList)
+            try:
+                words.addWords(filePath)
+            except FileNotFoundError:
+                raise ValueError("'{}' is not a built in list".format(wordList))
+        return words
 
 class Filter:
     """An object to filter files."""
