@@ -68,6 +68,7 @@ if len(args.files) > 0 or len(args.file) > 0:
         parseFiles(args.files, filter, hits, missingFiles)
         parseFiles(args.file, filter, hits, missingFiles)
 
+        hits.sort()
         for (file, word, line, col) in hits:
             print("{} {} ({}:{})".format(file, word, line, col))
 
