@@ -54,49 +54,51 @@ if args.files or args.file or args.stdin:
         for wordList in args.list:
             words.addWords(wordList)
 
-        def parseFiles(files, filter, hits, missing):
+        # WordList is complete, so setup variables
+        filter = filter.Filter(words)
+        hits = [ ]
+        missingFiles = [ ]
+
+        def parseFiles(files):
             """Parse a list of files, searching for filtered words.
 
             Arguments:
             files -- a list of files to parse (each file should be a
-                     full path)
-            filter -- a Filter object
-            hits -- a list to store filter's matches
-            missing -- a list to store entires in files that don't exist"""
+                     full path)"""
+            fn = lambda word, line, col: hits.append((f, word, line, col))
             for f in files:
                 try:
-                    filter.parseFile(f, lambda word, line, col: hits.append(
-                                           (f, word, line, col)))
+                    filter.parseFile(f, fn)
                 except FileNotFoundError:
-                    missing.append(f)
+                    missingFiles.append(f)
 
-        def parseStdin(filter, hits):
-            """Read data from stdin that should be searched for filter words.
-
-            Arguments:
-            filter -- a Filter object
-            hits -- a list to store filter's matches"""
-            lineNumber = 0
-            for line in stdin:
-                lineNumber += 1
-                filter.parseLine(line, lambda word, col: hits.append(
-                                  ("<stdin>", word, lineNumber, col)))
-
-        # WordList is complete, so start parsing
-        filter = filter.Filter(words)
-        hits = [ ]
-        missingFiles = [ ]
-        parseFiles(args.files, filter, hits, missingFiles)
-        parseFiles(args.file, filter, hits, missingFiles)
+        # parse normal files, plus anything that was passed in via the
+        # "--file" option
+        parseFiles(args.files)
+        parseFiles(args.file)
 
         if args.stdin:
-            parseStdin(filter, hits)
+            # if we're reading from stdin, we need a slightly different
+            # function
+            def parseStdin():
+                """Read data from stdin that should be searched for filter
+                words."""
+                lineNumber = 0
+                fn = lambda word, col: hits.append(("<stdin>", word,
+                                                    lineNumber, col))
+                for line in stdin:
+                    lineNumber += 1
+                    filter.parseLine(line, fn)
+            parseStdin()
 
+        # done processing, so sort results before printing them
         hits.sort()
         for (file, word, line, col) in hits:
             print("{} {} ({}:{})".format(file, word, line, col))
 
-        if len(missingFiles) > 0:
+        # sort an dprint any missing files to stderr
+        missingFiles.sort()
+        if missingFiles:
             print("Error opening files: {}".format(missingFiles), file=stderr)
             exit(1)
 
