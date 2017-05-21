@@ -4,6 +4,7 @@ import argparse
 from os import path
 from sys import argv
 from sys import stderr
+from sys import stdin
 
 from wtool import filter
 
@@ -20,20 +21,28 @@ parser.add_argument("--lists", help="Change the set of word lists.  This "
                     default=defaultListsStr)
 parser.add_argument("--list", help="Use a custom word list.  The list should "
                                    "be a plain text file with one word per "
-                                   "line.", action='append',
-                    default=[])
+                                   "line.",
+                    action="append", default=[])
 parser.add_argument("--file", help="Process a file.  This is only necessary "
                                    "if an input file matches an argument "
                                    "(e.g., --help).",
-                    action='append', default=[])
-parser.add_argument("files", help="Files to process.", nargs='*',
+                    action="append", default=[])
+parser.add_argument("--stdin", help="Parse stdin for filter words.  If both "
+                                    "files and this option are used, files "
+                                    "are processed before stdin.",
+                    action="store_true")
+parser.add_argument("files", help="Files to process.", nargs="*",
                     metavar="file")
 
 args = parser.parse_args()
-if len(args.files) > 0 or len(args.file) > 0:
+if args.files or args.file or args.stdin:
     args.lists = args.lists.split(",")
 
     def handleError(e):
+        """Print an error message and exit the program.
+
+        Arguments:
+        e -- the error that caused the problem"""
         print("Error: {}".format(str(e)))
         exit(1)
 
@@ -61,12 +70,27 @@ if len(args.files) > 0 or len(args.file) > 0:
                 except FileNotFoundError:
                     missing.append(f)
 
+        def parseStdin(filter, hits):
+            """Read data from stdin that should be searched for filter words.
+
+            Arguments:
+            filter -- a Filter object
+            hits -- a list to store filter's matches"""
+            lineNumber = 0
+            for line in stdin:
+                lineNumber += 1
+                filter.parseLine(line, lambda word, col: hits.append(
+                                  ("<stdin>", word, lineNumber, col)))
+
         # WordList is complete, so start parsing
         filter = filter.Filter(words)
         hits = [ ]
         missingFiles = [ ]
         parseFiles(args.files, filter, hits, missingFiles)
         parseFiles(args.file, filter, hits, missingFiles)
+
+        if args.stdin:
+            parseStdin(filter, hits)
 
         hits.sort()
         for (file, word, line, col) in hits:

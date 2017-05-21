@@ -68,6 +68,19 @@ class Filter:
         words -- the WordList to use"""
         self.words = words
 
+    def parseLine(self, line, fn):
+        """Search one line of text for any filter words.
+
+        Arguments:
+        line -- the line of text to parse
+        fn -- The function to call when a filter word is found.  Arguments are
+              word, lineNumber."""
+        for word, pattern in self.words.words.items():
+            match = pattern.search(line)
+            while match:
+                fn(word, match.start())
+                match = pattern.search(line, match.end())
+
     def parseFile(self, path, fn):
         """Parse a file.
 
@@ -76,11 +89,7 @@ class Filter:
         fn -- A function to invoke on each match.  Arguments are: word,
               lineNumber, column."""
         with open(path, 'r') as readFile:
-            lineNumber = 0
-            for line in readFile:
-                lineNumber += 1
-                for word, pattern in self.words.words.items():
-                    match = pattern.search(line)
-                    while match:
-                        fn(word, lineNumber, match.start())
-                        match = pattern.search(line, match.end())
+            line = 0
+            for text in readFile:
+                line += 1
+                self.parseLine(text, lambda word, col: fn(word, line, col))

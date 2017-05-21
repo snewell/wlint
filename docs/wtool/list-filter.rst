@@ -35,6 +35,8 @@ Options
                 matches an argument (e.g., --help).  For files that don't
                 share a name with an argument, they should be listed like
                 normal.
+--stdin         Parse input passed via stdin.  If used with files, the stdin
+                input is parsed after all the files.
 
 Word Lists
 ----------
