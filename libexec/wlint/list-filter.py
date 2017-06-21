@@ -9,15 +9,15 @@ from sys import stdin
 from wlint import filter
 
 listDir = "{}/../../share/wlint/filter-lists" \
-            .format(path.abspath(path.dirname(argv[0])))
+    .format(path.abspath(path.dirname(argv[0])))
 defaultLists = filter.DirectoryLists(listDir)
 
 defaultListsStr = ",".join(defaultLists.files)
 parser = argparse.ArgumentParser(description="Detect troublesome words")
 parser.add_argument("--lists", help="Change the set of word lists.  This "
                                     "should be a comma-separated list of "
-                                    "built-in lists.  [Default={}]" \
-                                        .format(defaultListsStr),
+                                    "built-in lists.  [Default={}]"
+                    .format(defaultListsStr),
                     default=defaultListsStr)
 parser.add_argument("--list", help="Use a custom word list.  The list should "
                                    "be a plain text file with one word per "
@@ -56,8 +56,8 @@ if args.files or args.file or args.stdin:
 
         # WordList is complete, so setup variables
         filter = filter.Filter(words)
-        hits = [ ]
-        missingFiles = [ ]
+        hits = []
+        missingFiles = []
 
         def parseFiles(files):
             """Parse a list of files, searching for filtered words.

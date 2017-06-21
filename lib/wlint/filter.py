@@ -3,10 +3,13 @@
 import os
 import re
 
+
 class WordList:
+
     """A list of words to search for"""
+
     def __init__(self):
-        self.words = { }
+        self.words = {}
 
     def addWord(self, word):
         """Add a word to the list.
@@ -26,8 +29,11 @@ class WordList:
             for line in inputList:
                 self.addWord(line[:-1])
 
+
 class DirectoryLists:
+
     """A collection of lists in a directory."""
+
     def __init__(self, path):
         """Constrcut a directory list.
 
@@ -36,7 +42,7 @@ class DirectoryLists:
         self.path = path
         files = os.listdir(path)
         pattern = re.compile("^([a-z]+)-words.txt$")
-        self.files = [ ]
+        self.files = []
         for file in files:
             m = pattern.search(file)
             if m:
@@ -59,8 +65,11 @@ class DirectoryLists:
                     ValueError("'{}' is not a built in list".format(wordList))
         return words
 
+
 class Filter:
+
     """An object to filter files."""
+
     def __init__(self, words):
         """Construct a Filter.
 
