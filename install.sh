@@ -89,22 +89,22 @@ done
 ${ECHO} "Instaling to \"${prefix}\""
 
 binFiles=" \
-	bin/wtool.sh \
+	bin/wlint.sh \
 "
 libexecFiles=" \
-	libexec/wtool/list-filter.py \
+	libexec/wlint/list-filter.py \
 "
 libWtoolLists=" \
-	lib/wtool/__init__.py \
-	lib/wtool/filter.py \
+	lib/wlint/__init__.py \
+	lib/wlint/filter.py \
 "
 filterLists=" \
-	share/wtool/filter-lists/filter-words.txt \
-	share/wtool/filter-lists/thought-words.txt \
-	share/wtool/filter-lists/weasel-words.txt \
+	share/wlint/filter-lists/filter-words.txt \
+	share/wlint/filter-lists/thought-words.txt \
+	share/wlint/filter-lists/weasel-words.txt \
 "
 
 install_helper install_exec "bin" ${binFiles}
-install_helper install_share "lib/wtool/" ${libWtoolLists}
-install_helper install_exec "libexec/wtool" ${libexecFiles}
-install_helper install_share "share/wtool/filter-lists" ${filterLists}
+install_helper install_share "lib/wlint/" ${libWtoolLists}
+install_helper install_exec "libexec/wlint" ${libexecFiles}
+install_helper install_share "share/wlint/filter-lists" ${filterLists}

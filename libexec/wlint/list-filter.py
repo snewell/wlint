@@ -6,9 +6,9 @@ from sys import argv
 from sys import stderr
 from sys import stdin
 
-from wtool import filter
+from wlint import filter
 
-listDir = "{}/../../share/wtool/filter-lists" \
+listDir = "{}/../../share/wlint/filter-lists" \
             .format(path.abspath(path.dirname(argv[0])))
 defaultLists = filter.DirectoryLists(listDir)
 
