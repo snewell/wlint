@@ -65,10 +65,12 @@ if args.files or args.file or args.stdin:
             Arguments:
             files -- a list of files to parse (each file should be a
                      full path)"""
-            fn = lambda word, line, col: hits.append((f, word, line, col))
+
             for f in files:
                 try:
-                    filter.parseFile(f, fn)
+                    filter.parseFile(
+                        f, lambda word, line, col: hits.append(
+                            (f, word, line, col)))
                 except FileNotFoundError:
                     missingFiles.append(f)
 
@@ -84,11 +86,12 @@ if args.files or args.file or args.stdin:
                 """Read data from stdin that should be searched for filter
                 words."""
                 lineNumber = 0
-                fn = lambda word, col: hits.append(("<stdin>", word,
-                                                    lineNumber, col))
+
                 for line in stdin:
                     lineNumber += 1
-                    filter.parseLine(line, fn)
+                    filter.parseLine(
+                        line, lambda word, col: hits.append(
+                            ("<stdin>", word, lineNumber, col)))
             parseStdin()
 
         # done processing, so sort results before printing them
