@@ -4,7 +4,7 @@ import argparse
 import sys
 
 
-class ArgumentParser:
+class Tool:
 
     def __init__(self, description):
         self.parser = argparse.ArgumentParser(description=description)
@@ -28,11 +28,34 @@ class ArgumentParser:
     def add_argument(self, *args, **kwargs):
         self.parser.add_argument(*args, **kwargs)
 
-    def parse_args(self, *args, **kwargs):
+    def execute(self, *args, **kwargs):
         args = self.parser.parse_args(*args, **kwargs)
-        if not args.files and not args.file and not args.stdin:
+
+        self.setup(args)
+
+        def parseFiles(files):
+            """Parse a list of files, searching for filtered words.
+
+            Arguments:
+            files -- a list of files to parse (each file should be a
+                        full path)"""
+
+            for f in files:
+                with open(f, 'r') as readFile:
+                    self.process(readFile)
+
+        # parse normal files, plus anything that was passed in via the
+        # "--file" option
+        parseFiles(args.files)
+        parseFiles(args.file)
+
+        # check for stdin
+        if args.stdin:
+            self.process(sys.stdin)
+
+    def validate_arguments(self, arguments):
+        if not arguments.files and not arguments.file and not arguments.stdin:
             print(
                 "Error: no files specified ({} -h)".format(sys.argv[0]),
                 file=sys.stderr)
             exit(1)
-        return args

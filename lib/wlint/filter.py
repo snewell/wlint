@@ -90,15 +90,14 @@ class Filter:
                 fn(word, match.start())
                 match = pattern.search(line, match.end())
 
-    def parseFile(self, path, fn):
+    def parseHandle(self, fileHandle, fn):
         """Parse a file.
 
         Arguments:
-        path -- the file to parse
+        fileHandle -- a handle to read from
         fn -- A function to invoke on each match.  Arguments are: word,
               lineNumber, column."""
-        with open(path, 'r') as readFile:
-            line = 0
-            for text in readFile:
-                line += 1
-                self.parseLine(text, lambda word, col: fn(word, line, col))
+        line = 0
+        for text in fileHandle:
+            line += 1
+            self.parseLine(text, lambda word, col: fn(word, line, col))
