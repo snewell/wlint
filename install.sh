@@ -96,6 +96,7 @@ libexecFiles=" \
 "
 libWtoolLists=" \
 	lib/wlint/__init__.py \
+	lib/wlint/common.py \
 	lib/wlint/filter.py \
 "
 filterLists=" \
