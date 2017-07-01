@@ -46,12 +46,23 @@ class ListFilter(wlint.common.Tool):
     def process(self, fileHandle):
         self.filter.parseHandle(fileHandle,
                                 lambda word, line, col: self.hits.append(
-                                    (fileHandle, word, line, col)))
+                                    (fileHandle.name, word, line, col)))
 
 
 listFilter = ListFilter()
-listFilter.execute()
+try:
+    listFilter.execute()
 
-listFilter.hits.sort()
-for (file, word, line, col) in listFilter.hits:
-    print("{} {} ({}:{})".format(file.name, word, line, col))
+    listFilter.hits.sort()
+    for (file, word, line, col) in listFilter.hits:
+        print("{} {} ({}:{})".format(file, word, line, col))
+
+    if listFilter.missingFiles:
+        print(
+            "Error opening files: {}".format(
+                listFilter.missingFiles),
+            file=sys.stderr)
+        exit(1)
+except ValueError as e:
+    print("Error: {}".format(str(e)), file=sys.stderr)
+    exit(1)

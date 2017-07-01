@@ -25,9 +25,13 @@ class WordList:
 
         Arguments:
         path -- path of the file to parse"""
-        with open(path, "r") as inputList:
-            for line in inputList:
-                self.addWord(line[:-1])
+        try:
+            with open(path, "r") as inputList:
+                for line in inputList:
+                    self.addWord(line[:-1])
+        except FileNotFoundError:
+            raise \
+                ValueError("'{}' is not a word list".format(path))
 
 
 class DirectoryLists:
@@ -58,11 +62,7 @@ class DirectoryLists:
 
         for wordList in wordLists:
             filePath = "{}/{}-words.txt".format(self.path, wordList)
-            try:
-                words.addWords(filePath)
-            except FileNotFoundError:
-                raise \
-                    ValueError("'{}' is not a built in list".format(wordList))
+            words.addWords(filePath)
         return words
 
 

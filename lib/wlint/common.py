@@ -33,6 +33,8 @@ class Tool:
 
         self.setup(args)
 
+        missingFiles = []
+
         def parseFiles(files):
             """Parse a list of files, searching for filtered words.
 
@@ -41,8 +43,11 @@ class Tool:
                         full path)"""
 
             for f in files:
-                with open(f, 'r') as readFile:
-                    self.process(readFile)
+                try:
+                    with open(f, 'r') as readFile:
+                        self.process(readFile)
+                except FileNotFoundError:
+                    missingFiles.append(f)
 
         # parse normal files, plus anything that was passed in via the
         # "--file" option
@@ -52,6 +57,9 @@ class Tool:
         # check for stdin
         if args.stdin:
             self.process(sys.stdin)
+
+        missingFiles.sort()
+        self.missingFiles = missingFiles
 
     def validate_arguments(self, arguments):
         if not arguments.files and not arguments.file and not arguments.stdin:
