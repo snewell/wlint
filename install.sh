@@ -92,6 +92,7 @@ binFiles=" \
 	bin/wlint.sh \
 "
 libexecFiles=" \
+	libexec/wlint/count-words.py \
 	libexec/wlint/list-filter.py \
 "
 libWtoolLists=" \
