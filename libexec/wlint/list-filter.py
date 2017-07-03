@@ -37,10 +37,15 @@ class ListFilter(wlint.common.Tool):
             default="alpha")
 
     def setup(self, arguments):
-        lists = arguments.lists.split(",")
-        # Read the built in lists
-        words = defaultLists.buildWordList(lists)
+        def make_lists():
+            if arguments.lists:
+                lists = arguments.lists.split(",")
+                # Read the built in lists
+                return defaultLists.buildWordList(lists)
+            else:
+                return wlint.filter.WordList()
 
+        words = make_lists()
         # Read any extra lists
         for wordList in arguments.list:
             words.addWords(wordList)
