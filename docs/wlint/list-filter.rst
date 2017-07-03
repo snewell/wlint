@@ -22,13 +22,13 @@ line and column.  Example output looks like this:
     A-00prologue.tex could (15:72)
     A-00prologue.tex could (19:628)
 
+If no files are specified, input is read via standard input.
+
 Options
 -------
 -h, --help            show this help message and exit
 --file FILE           Process a file. This is only necessary if an input
                       file matches an argument (e.g., --help).
---stdin               Parse stdin. If both files and this option are used,
-                      files are processed before stdin.
 --lists LISTS         Change the set of word lists. This should be a comma-
                       separated list of built-in lists.
                       [Default=filter,thought,weasel]

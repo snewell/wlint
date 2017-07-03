@@ -16,11 +16,6 @@ class Tool:
             "matches an argument (e.g., --help).",
             action="append",
             default=[])
-        self.parser.add_argument(
-            "--stdin",
-            help="Parse stdin.  If both files and this option are "
-                 "used, files are processed before stdin.",
-            action="store_true")
         self.parser.add_argument("files",
                                  help="Files to process.", nargs="*",
                                  metavar="file")
@@ -49,21 +44,17 @@ class Tool:
                 except FileNotFoundError:
                     missingFiles.append(f)
 
-        # parse normal files, plus anything that was passed in via the
-        # "--file" option
-        parseFiles(args.files)
-        parseFiles(args.file)
-
-        # check for stdin
-        if args.stdin:
+        if args.files or args.file:
+            # parse normal files, plus anything that was passed in via the
+            # "--file" option
+            parseFiles(args.files)
+            parseFiles(args.file)
+        else:
+            # no files provided, so default to stdin
             self.process(sys.stdin)
 
         missingFiles.sort()
         self.missingFiles = missingFiles
 
     def validate_arguments(self, arguments):
-        if not arguments.files and not arguments.file and not arguments.stdin:
-            print(
-                "Error: no files specified ({} -h)".format(sys.argv[0]),
-                file=sys.stderr)
-            exit(1)
+        pass

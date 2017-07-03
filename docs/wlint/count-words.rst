@@ -23,13 +23,13 @@ after each file's summary.
     all     4
     am      1
 
+If no files are specified, input is read via standard input.
+
 Options
 -------
 -h, --help        show this help message and exit
 --file FILE       Process a file. This is only necessary if an input file
                   matches an argument (e.g., --help).
---stdin           Parse stdin. If both files and this option are used, files
-                  are processed before stdin.
 --case-sensitive  Treat words differently if they use a different case.
 --summarize       Only print summarized results.
 --sort-count      Print largest counts first [Default: alphabetize words
