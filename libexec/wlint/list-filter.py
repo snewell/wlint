@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import operator
 import os
 import sys
 
@@ -28,6 +29,12 @@ class ListFilter(wlint.common.Tool):
                  "file with one word per line.",
             action="append",
             default=[])
+        self.add_argument(
+            "--sort-method",
+            help="Method to sort discovered words.  Options are alpha (filter"
+            " words are alphabetized and grouped) and sequential (the order "
+            "words appear in input).  The default is alpha.",
+            default="alpha")
 
     def setup(self, arguments):
         lists = arguments.lists.split(",")
@@ -40,22 +47,48 @@ class ListFilter(wlint.common.Tool):
 
         # WordList is complete, so setup variables
         self.filter = wlint.filter.Filter(words)
-        self.hits = []
         self.missingFiles = []
 
+        def alpha_sort(hits):
+            hits.sort()
+
+        def sequential_sort(hits):
+            hits.sort(key=operator.itemgetter(1, 2))
+
+        if arguments.sort_method == "alpha":
+            self.sorter = alpha_sort
+        elif arguments.sort_method == "sequential":
+            self.sorter = sequential_sort
+        else:
+            raise ValueError(
+                "'{}' is not a valid sort option".format(
+                    arguments.sort_method))
+
     def process(self, fileHandle):
+        hits = []
         self.filter.parseHandle(fileHandle,
-                                lambda word, line, col: self.hits.append(
-                                    (fileHandle.name, word, line, col)))
+                                lambda word, line, col: hits.append(
+                                    (word, line, col)))
+        self.print_hits(
+            hits,
+            lambda word,
+            line,
+            col: print(
+                "{} {} ({}:{})".format(
+                    fileHandle.name,
+                    word,
+                    line,
+                    col)))
+
+    def print_hits(self, hits, fn):
+        self.sorter(hits)
+        for (word, line, col) in hits:
+            fn(word, line, col)
 
 
 listFilter = ListFilter()
 try:
     listFilter.execute()
-
-    listFilter.hits.sort()
-    for (file, word, line, col) in listFilter.hits:
-        print("{} {} ({}:{})".format(file, word, line, col))
 
     if listFilter.missingFiles:
         print(

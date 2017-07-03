@@ -24,19 +24,21 @@ line and column.  Example output looks like this:
 
 Options
 -------
--h, --help      Display a help message
---lists LISTS   Change the set of word lists.  This should be a comma-separated
-                list of built-in lists (e.g., :code:`--lists=filter,thought`).
-                To disable all built-in lists, provide nothing after the
-                equals sign (i.e., :code:`--list=`).
---list LIST     Use a custom word list.  The list must be a file that meets
-                the worst list format requirements.
---file FILE     Process a file.  This is only necessary if an input file
-                matches an argument (e.g., --help).  For files that don't
-                share a name with an argument, they should be listed like
-                normal.
---stdin         Parse input passed via stdin.  If used with files, the stdin
-                input is parsed after all the files.
+-h, --help            show this help message and exit
+--file FILE           Process a file. This is only necessary if an input
+                      file matches an argument (e.g., --help).
+--stdin               Parse stdin. If both files and this option are used,
+                      files are processed before stdin.
+--lists LISTS         Change the set of word lists. This should be a comma-
+                      separated list of built-in lists.
+                      [Default=filter,thought,weasel]
+--list LIST           Use a custom word list. The list should be a plain
+                      text file with one word per line.
+--sort-method SORT_METHOD
+                      Method to sort discovered words. Options are alpha
+                      (filter words are alphabetized and grouped) and
+                      sequential (the order words appear in input). The
+                      default is alpha.
 
 Word Lists
 ----------
