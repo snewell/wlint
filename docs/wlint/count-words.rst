@@ -4,7 +4,7 @@ count-words is a tool to count the frequency of each word in a set of files.
 
 Usage
 -----
-:code:`count-wrods [options] file [file ...]`
+:code:`count-words [options] file [file ...]`
 
 Each word in the file and its number of occurances will be displayed.  If more
 than one file is specified, the full word list and count will be provided

@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import operator
-import os
 import re
 import sys
 
