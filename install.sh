@@ -94,6 +94,7 @@ binFiles=" \
 libexecFiles=" \
 	libexec/wlint/count-words.py \
 	libexec/wlint/list-filter.py \
+	libexec/wlint/punctuation-style.py \
 "
 libWtoolLists=" \
 	lib/wlint/__init__.py \
