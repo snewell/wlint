@@ -8,8 +8,8 @@ import wlint.punctuation
 
 class PunctuationStyle(wlint.common.Tool):
 
-    def __init__(self, description):
-        super().__init__(description)
+    def __init__(self):
+        super().__init__("Check for common punctuation issues")
         self.checks = wlint.punctuation.PunctuationRules().rules
 
     def setup(self, arguments):
@@ -31,6 +31,5 @@ class PunctuationStyle(wlint.common.Tool):
             print("{}-{}:{} {}".format(fileHandle.name, line, col, message))
 
 
-punctuationStyle = PunctuationStyle("Check for common punctuation issues")
-punctuationStyle.execute()
-exit(punctuationStyle.result)
+punctuationStyle = PunctuationStyle()
+wlint.common.execute_tool(punctuationStyle)

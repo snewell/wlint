@@ -82,13 +82,11 @@ class WordCounter(wlint.common.Tool):
             list_items.sort()
         return list_items
 
+    def display_results(self):
+        if self.file_count > 1:
+            print("Total:")
+            print_counts(self.get_counts(self.counts))
+
 
 wordCounter = WordCounter()
-try:
-    wordCounter.execute()
-    if wordCounter.file_count > 1:
-        print("Total:")
-        print_counts(wordCounter.get_counts(wordCounter.counts))
-except Exception as e:
-    print("Error: {}".format(str(e)), file=sys.stderr)
-    exit(1)
+wlint.common.execute_tool(wordCounter)

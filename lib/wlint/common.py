@@ -58,3 +58,22 @@ class Tool:
 
     def validate_arguments(self, arguments):
         pass
+
+    def display_results(self):
+        pass
+
+
+def execute_tool(tool):
+    try:
+        tool.execute()
+        tool.display_results()
+
+        if tool.missingFiles:
+            print(
+                "Error opening files: {}".format(
+                    tool.missingFiles),
+                file=sys.stderr)
+            exit(1)
+    except Exception as e:
+        print("Error: {}".format(str(e)), file=sys.stderr)
+        exit(1)

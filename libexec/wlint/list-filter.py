@@ -92,15 +92,4 @@ class ListFilter(wlint.common.Tool):
 
 
 listFilter = ListFilter()
-try:
-    listFilter.execute()
-
-    if listFilter.missingFiles:
-        print(
-            "Error opening files: {}".format(
-                listFilter.missingFiles),
-            file=sys.stderr)
-        exit(1)
-except ValueError as e:
-    print("Error: {}".format(str(e)), file=sys.stderr)
-    exit(1)
+wlint.common.execute_tool(listFilter)
