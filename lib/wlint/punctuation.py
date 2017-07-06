@@ -33,13 +33,16 @@ class PunctuationRules:
 
         def quote_order_rule(name, single, double):
             self.rules[
-                "quotation.missing-{}-space-single-double".format(name)] = pair_regex(single, double)
+                "quotation.missing-{}-space-single-double".format(name)] = \
+                pair_regex(single, double)
             self.rules[
-                "quotation.missing-{}-space-double-single".format(name)] = pair_regex(double, single)
+                "quotation.missing-{}-space-double-single".format(name)] = \
+                pair_regex(double, single)
 
         def double_punctuation_rule(name, quote):
             self.rules[
-                "quotation.consecutive-{}-quotes".format(name)] = pair_regex(quote, quote)
+                "quotation.consecutive-{}-quotes".format(name)] = \
+                pair_regex(quote, quote)
 
         def correct_space_rule(name, single, double):
             def correct_space_builder(first, second):
@@ -61,9 +64,11 @@ class PunctuationRules:
                 return execute
 
             self.rules[
-                "quotation.incorrect-space-{}-single-double".format(name)] = correct_space_builder(single, double)
+                "quotation.incorrect-space-{}-single-double".format(name)] = \
+                correct_space_builder(single, double)
             self.rules[
-                "quotation.incorrect-space-{}-double-single".format(name)] = correct_space_builder(double, single)
+                "quotation.incorrect-space-{}-double-single".format(name)] = \
+                correct_space_builder(double, single)
 
         self.rules = {}
 
@@ -81,4 +86,3 @@ class PunctuationRules:
         correct_space_rule("closing",
                            PunctuationRules.right_single_quote,
                            PunctuationRules.right_double_quote)
-
