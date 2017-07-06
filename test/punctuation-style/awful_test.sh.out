@@ -1,3 +1,4 @@
 <stdin>-1:0 quotation.consecutive-opening-quotes
 <stdin>-3:26 quotation.missing-closing-space-single-double
 <stdin>-5:0 quotation.incorrect-space-opening-double-single
+<stdin>-7:26 emdash.replace-double-hyphen

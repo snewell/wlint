@@ -86,3 +86,5 @@ class PunctuationRules:
         correct_space_rule("closing",
                            PunctuationRules.right_single_quote,
                            PunctuationRules.right_double_quote)
+
+        self.rules["emdash.replace-double-hyphen"] = pair_regex("\\-", "\\-")
