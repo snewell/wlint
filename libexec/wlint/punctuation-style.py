@@ -21,12 +21,14 @@ class PunctuationStyle(wlint.common.Tool):
         for text in fileHandle:
             lineNumber += 1
             for message, fn in self.checks.items():
-                if fn(text, lambda pos: hits.append(lineNumber, pos, message)):
+                if fn(
+                    text, lambda pos: hits.append(
+                        (lineNumber, pos, message))):
                     self.result = 1
 
         hits.sort()
         for (line, col, message) in hits:
-            print("{}-{}:{} {}".format(fileHandle.name, line, pos, message))
+            print("{}-{}:{} {}".format(fileHandle.name, line, col, message))
 
 
 punctuationStyle = PunctuationStyle("Check for common punctuation issues")
