@@ -100,6 +100,7 @@ libWtoolLists=" \
 	lib/wlint/__init__.py \
 	lib/wlint/common.py \
 	lib/wlint/filter.py \
+	lib/wlint/punctuation.py \
 "
 filterLists=" \
 	share/wlint/filter-lists/filter-words.txt \
