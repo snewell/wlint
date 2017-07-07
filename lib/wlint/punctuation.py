@@ -33,10 +33,10 @@ class PunctuationRules:
 
         def quote_order_rule(name, single, double):
             self.rules[
-                "quotation.missing-{}-space-single-double".format(name)] = \
+                "quotation.missing-space-{}-single-double".format(name)] = \
                 pair_regex(single, double)
             self.rules[
-                "quotation.missing-{}-space-double-single".format(name)] = \
+                "quotation.missing-space-{}-double-single".format(name)] = \
                 pair_regex(double, single)
 
         def double_punctuation_rule(name, quote):
