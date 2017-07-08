@@ -1,0 +1,6 @@
+<stdin>-1:29 colon.preceeding-space
+<stdin>-3:32 colon.preceeding-space
+<stdin>-3:33 colon.missing-space
+<stdin>-5:32 semicolon.preceeding-space
+<stdin>-5:33 semicolon.missing-space
+<stdin>-7:22 semicolon.preceeding-space

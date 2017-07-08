@@ -13,6 +13,9 @@ class PunctuationRules:
     thin_sapce_break = " "
     thin_space_nonbreak = " "
 
+    emdash = "—"
+    endash = "–"
+
     def __init__(self):
         def regex_rule(pattern_text):
             pattern = re.compile(pattern_text)
@@ -87,4 +90,13 @@ class PunctuationRules:
                            PunctuationRules.right_single_quote,
                            PunctuationRules.right_double_quote)
 
-        self.rules["emdash.replace-double-hyphen"] = pair_regex("\\-", "\\-")
+        self.rules["emdash.replace-double-hyphen"] = regex_rule("\\-\\-")
+        self.rules["emdash.preceeding-space"] = \
+            pair_regex("\\s", PunctuationRules.emdash)
+        self.rules["emdash.following-space"] = \
+            pair_regex(PunctuationRules.emdash, "\\s")
+
+        self.rules["colon.preceeding-space"] = regex_rule("\\s:")
+        self.rules["colon.missing-space"] = regex_rule(":\\S")
+        self.rules["semicolon.preceeding-space"] = regex_rule("\\s;")
+        self.rules["semicolon.missing-space"] = regex_rule(";\\S")
