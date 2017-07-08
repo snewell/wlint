@@ -34,6 +34,8 @@ class PunctuationRules:
         def pair_regex(first, second):
             return regex_rule("{}{}".format(first, second))
 
+        self.rules = {}
+
         def quote_order_rule(name, single, double):
             self.rules[
                 "quotation.missing-space-{}-single-double".format(name)] = \
@@ -42,10 +44,20 @@ class PunctuationRules:
                 "quotation.missing-space-{}-double-single".format(name)] = \
                 pair_regex(double, single)
 
+        quote_order_rule("opening",
+                         PunctuationRules.left_single_quote,
+                         PunctuationRules.left_double_quote)
+        quote_order_rule("closing",
+                         PunctuationRules.right_single_quote,
+                         PunctuationRules.right_double_quote)
+
         def double_punctuation_rule(name, quote):
             self.rules[
                 "quotation.consecutive-{}-quotes".format(name)] = \
                 pair_regex(quote, quote)
+
+        double_punctuation_rule("opening", PunctuationRules.left_single_quote)
+        double_punctuation_rule("closing", PunctuationRules.right_double_quote)
 
         def correct_space_rule(name, single, double):
             def correct_space_builder(first, second):
@@ -73,16 +85,6 @@ class PunctuationRules:
                 "quotation.incorrect-space-{}-double-single".format(name)] = \
                 correct_space_builder(double, single)
 
-        self.rules = {}
-
-        quote_order_rule("opening",
-                         PunctuationRules.left_single_quote,
-                         PunctuationRules.left_double_quote)
-        quote_order_rule("closing",
-                         PunctuationRules.right_single_quote,
-                         PunctuationRules.right_double_quote)
-        double_punctuation_rule("opening", PunctuationRules.left_single_quote)
-        double_punctuation_rule("closing", PunctuationRules.right_double_quote)
         correct_space_rule("opening",
                            PunctuationRules.left_single_quote,
                            PunctuationRules.left_double_quote)
@@ -100,3 +102,22 @@ class PunctuationRules:
         self.rules["colon.missing-space"] = regex_rule(":\\S")
         self.rules["semicolon.preceeding-space"] = regex_rule("\\s;")
         self.rules["semicolon.missing-space"] = regex_rule(";\\S")
+
+        def range_rule(pattern):
+            self.rules["endash.preceeding-space"] = \
+                regex_rule("{}\\s+{}\\s*{}".format(pattern,
+                                                   PunctuationRules.endash,
+                                                   pattern))
+            self.rules["endash.trailing-space"] = \
+                regex_rule("{}\\s*{}\\s+{}".format(pattern,
+                                                   PunctuationRules.endash,
+                                                   pattern))
+
+            self.rules["endash.replace-hyphen"] = \
+                regex_rule("{}\\s*-\\s*{}".format(pattern, pattern))
+            self.rules["endash.replace-emdash"] = \
+                regex_rule("{}\\s*{}\\s*{}".format(pattern,
+                                                   PunctuationRules.emdash,
+                                                   pattern))
+
+        range_rule("\\d+")

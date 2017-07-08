@@ -1,0 +1,4 @@
+<stdin>-1:24 endash.replace-hyphen
+<stdin>-3:62 endash.preceeding-space
+<stdin>-3:62 endash.trailing-space
+<stdin>-5:34 endash.replace-emdash
