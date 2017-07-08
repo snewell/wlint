@@ -95,13 +95,17 @@ class PunctuationRules:
         self.rules["emdash.replace-double-hyphen"] = regex_rule("\\-\\-")
         self.rules["emdash.preceeding-space"] = \
             pair_regex("\\s", PunctuationRules.emdash)
-        self.rules["emdash.following-space"] = \
+        self.rules["emdash.trailing-space"] = \
             pair_regex(PunctuationRules.emdash, "\\s")
 
-        self.rules["colon.preceeding-space"] = regex_rule("\\s:")
-        self.rules["colon.missing-space"] = regex_rule(":\\S")
-        self.rules["semicolon.preceeding-space"] = regex_rule("\\s;")
-        self.rules["semicolon.missing-space"] = regex_rule(";\\S")
+        def colon_rule(name, colon):
+            self.rules["{}.missing-space".format(name)] = \
+                pair_regex(colon, "\\S")
+            self.rules["{}.preceeding-space".format(name)] = \
+                pair_regex("\\s", colon)
+
+        colon_rule("colon", ":")
+        colon_rule("semicolon", ";")
 
         def range_rule(pattern):
             self.rules["endash.preceeding-space"] = \
