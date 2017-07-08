@@ -99,13 +99,44 @@ class PunctuationRules:
             pair_regex(PunctuationRules.emdash, "\\s")
 
         def colon_rule(name, colon):
-            self.rules["{}.missing-space".format(name)] = \
-                pair_regex(colon, "\\S")
+            # a colon might be followed by a digit if it's time
+            if name == "colon":
+                self.rules["{}.missing-space".format(name)] = \
+                    pair_regex(colon, "[^\\s\\d]")
+            elif name == "semicolon":
+                self.rules["{}.missing-space".format(name)] = \
+                    pair_regex(colon, "\\S")
+
             self.rules["{}.preceeding-space".format(name)] = \
                 pair_regex("\\s", colon)
 
         colon_rule("colon", ":")
         colon_rule("semicolon", ";")
+
+        time_regex = "(?:1[0-2]|0?[1-9]):(?:[0-5][0-9])"
+        time_regex_with_space = "(?:1[0-2]|0?[1-9]):(?:[0-5][0-9] ?)"
+        ampm_regex = "(?:[AaPp]\\.?[Mm]\\.?)"
+        ampm_regex_no_periods = "(?:[AaPp][Mm])"
+
+        def uppercase_ampm_builder():
+            def builder(first, second):
+                ampm_regex_uppercase = "(?:[{}]\\.?{}\\.?)".format(first,
+                                                                   second)
+                self.rules[
+                    "time.uppercase-{}{}".format(
+                        first,
+                        second)] = pair_regex(
+                    time_regex_with_space,
+                    ampm_regex_uppercase)
+
+            builder("AP", "m")
+            builder("AP", "M")
+            builder("ap", "M")
+
+        self.rules["time.missing-periods"] = pair_regex(time_regex_with_space,
+                                                        ampm_regex_no_periods)
+        self.rules["time.missing-space"] = pair_regex(time_regex, ampm_regex)
+        uppercase_ampm_builder()
 
         def range_rule(pattern):
             self.rules["endash.preceeding-space"] = \

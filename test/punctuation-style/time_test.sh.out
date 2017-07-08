@@ -1,0 +1,11 @@
+<stdin>-1:0 time.missing-periods
+<stdin>-1:0 time.missing-space
+<stdin>-2:0 time.missing-periods
+<stdin>-3:0 time.missing-periods
+<stdin>-3:0 time.uppercase-APM
+<stdin>-4:0 time.uppercase-APM
+<stdin>-5:0 time.missing-periods
+<stdin>-5:0 time.uppercase-apM
+<stdin>-6:0 time.missing-periods
+<stdin>-6:0 time.uppercase-APm
+<stdin>-7:0 time.uppercase-apM

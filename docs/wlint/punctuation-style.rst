@@ -59,11 +59,6 @@ specific issue.
     Detect cases where an endash (–) is followed by a space (e.g., 24– 30).
     Fix by removing the space.
 
-:semicolon.missing-space:
-    See **colon.missing-space**.
-:semicolon.preceeding-space:
-    See **colon.preceeding-space**.
-
 :quotation.consecutive-closing-quotes:
     Detect two closing sinqle quotes (’’).  Fix by using an closing double
     quote (”).
@@ -89,3 +84,21 @@ specific issue.
     **quotation.missing-space-closing-single-double**,
     **quotation.missing-space-opening-double-single**, and
     **quotation.missing-space-opening-single-double**.
+
+:semicolon.missing-space:
+    See **colon.missing-space**.
+:semicolon.preceeding-space:
+    See **colon.preceeding-space**.
+
+:time.missing-periods:
+    A string that looks like a time is missing the periods in the a.m./p.m.
+    section (e.g., 10:00 am).  Fix by adding the periods (10:00 a.m.).
+:time.missing-space:
+    A string that looks like a time is missing a space between the numeric time
+    and the a.m./p.m. (e.g., 10:00a.m.).  Fix by adding a space (10:00 a.m.).
+:time.uppercase-APM:
+    A string that looks like a time uses uppercase letters in the a.m./p.m.
+    section (e.g., 10:00 A.M.).  Fix by using lowercase letters.
+
+    Similar rules exist to detect inconsistent capitalizaiton within a time.
+    See **time.uppercase-APm** and **time.uppercase-apM**.
