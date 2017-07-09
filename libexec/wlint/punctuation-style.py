@@ -20,7 +20,7 @@ class PunctuationStyle(wlint.common.Tool):
         hits = []
         for text in fileHandle:
             lineNumber += 1
-            for message, fn in self.checks.items():
+            for (message, fn) in self.checks:
                 if fn(
                     text, lambda pos: hits.append(
                         (lineNumber, pos, message))):
