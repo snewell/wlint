@@ -6,6 +6,8 @@ CUT=/usr/bin/cut
 DIRNAME=/usr/bin/dirname
 ECHO=/bin/echo
 INSTALL=/usr/bin/install
+RST2MAN=/usr/bin/rst2man.py
+SED=/bin/sed
 
 prefix=/usr/local
 
@@ -50,6 +52,15 @@ install_share() {
 
 install_directory() {
 	${INSTALL} -m 0755 -d "${prefix}/${1}"
+}
+
+install_man() {
+	dest=$(${BASENAME} "${1}" | ${CUT} -d . -f 1)
+	# rst2man doesn't setup the man page perfectly, so tweak the output a bit.
+	# The pattern is: command-name man-section date source manual
+	${RST2MAN} "${1}" |
+		${SED} "s^\.TH.*^.TH \"${dest}\" \"1\" \"\" \"wlint\" \"wlint manual\"^" \
+		> "${prefix}/${2}/wlint-${dest}.1"
 }
 
 install_helper() {
@@ -108,7 +119,14 @@ filterLists=" \
 	share/wlint/filter-lists/weasel-words.txt \
 "
 
+documentationLists=" \
+	docs/wlint/count-words.rst \
+	docs/wlint/list-filter.rst \
+	docs/wlint/punctuation-style.rst \
+"
+
 install_helper install_exec "bin" ${binFiles}
 install_helper install_share "lib/wlint/" ${libWtoolLists}
 install_helper install_exec "libexec/wlint" ${libexecFiles}
 install_helper install_share "share/wlint/filter-lists" ${filterLists}
+install_helper install_man "share/man/man1" ${documentationLists}
