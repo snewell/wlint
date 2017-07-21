@@ -1,11 +1,28 @@
+===========
 count-words
 ===========
-count-words is a tool to count the frequency of each word in a set of files.
 
-Usage
------
-:code:`count-words [options] file [file ...]`
+----------------------------
+count the frequency of words
+----------------------------
 
+.. BEGIN_MAN_SECTION
+
+:Author: Stephen Newell
+:Copyright: BSD Two-Clause
+:Version: 0.1.0
+:Manual section: 1
+:Manual group: wlint manual
+
+.. END_MAN_SECTION
+
+Synopsis
+--------
+:code:`count-words [options] [file [file ...]]`
+
+
+Description
+-----------
 Each word in the file and its number of occurances will be displayed.  If more
 than one file is specified, the full word list and count will be provided
 after each file's summary.
@@ -24,6 +41,7 @@ after each file's summary.
     am      1
 
 If no files are specified, input is read via standard input.
+
 
 Options
 -------

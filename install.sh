@@ -7,6 +7,7 @@ DIRNAME=/usr/bin/dirname
 ECHO=/bin/echo
 INSTALL=/usr/bin/install
 RST2MAN=/usr/bin/rst2man.py
+RST2HTML=/usr/bin/rst2html.py
 SED=/bin/sed
 
 prefix=/usr/local
@@ -54,13 +55,15 @@ install_directory() {
 	${INSTALL} -m 0755 -d "${prefix}/${1}"
 }
 
+install_html() {
+	dest=$(${BASENAME} "${1}" | ${CUT} -d . -f 1)
+	${SED} '/.. BEGIN_MAN_SECTION/,/.. END_MAN_SECTION/d' "${1}" |
+		${RST2HTML} > "${prefix}/${2}/wlint-${dest}.html"
+}
+
 install_man() {
 	dest=$(${BASENAME} "${1}" | ${CUT} -d . -f 1)
-	# rst2man doesn't setup the man page perfectly, so tweak the output a bit.
-	# The pattern is: command-name man-section date source manual
-	${RST2MAN} "${1}" |
-		${SED} "s^\.TH.*^.TH \"${dest}\" \"1\" \"\" \"wlint\" \"wlint manual\"^" \
-		> "${prefix}/${2}/wlint-${dest}.1"
+	${RST2MAN} "${1}" > "${prefix}/${2}/wlint-${dest}.1"
 }
 
 install_helper() {
@@ -119,14 +122,25 @@ filterLists=" \
 	share/wlint/filter-lists/weasel-words.txt \
 "
 
+# tools
+install_helper install_exec "bin" ${binFiles}
+install_helper install_share "lib/wlint/" ${libWtoolLists}
+install_helper install_exec "libexec/wlint" ${libexecFiles}
+install_helper install_share "share/wlint/filter-lists" ${filterLists}
+
 documentationLists=" \
 	docs/wlint/count-words.rst \
 	docs/wlint/list-filter.rst \
 	docs/wlint/punctuation-style.rst \
 "
 
-install_helper install_exec "bin" ${binFiles}
-install_helper install_share "lib/wlint/" ${libWtoolLists}
-install_helper install_exec "libexec/wlint" ${libexecFiles}
-install_helper install_share "share/wlint/filter-lists" ${filterLists}
+extraFiles=" \
+	COPYING \
+	README.rst \
+"
+
+docDir="share/doc/wlint"
+# docs
 install_helper install_man "share/man/man1" ${documentationLists}
+install_helper install_share "${docDir}" ${extraFiles}
+install_helper install_html "${docDir}/html" ${documentationLists}
