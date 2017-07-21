@@ -1,28 +1,46 @@
 list-filter
 ===========
-list-filter is a tool to detect words that weaken writing.
 
-Usage
------
-:code:`list-filter [options] file [file ...]`
+--------------------------------
+detect words that weaken writing
+--------------------------------
 
+.. BEGIN_MAN_SECTION
+
+:Author: Stephen Newell
+:Copyright: BSD Two-Clause
+:Version: 0.1.0
+:Manual section: 1
+:Manual group: wlint manual
+
+.. END_MAN_SECTION
+
+
+Synopsis
+--------
+:code:`list-filter [options] [file [file ...]]`
+
+
+Description
+-----------
 Each instance of a word in the filter lists will be displayed, along with the
 line and column.  Example output looks like this:
 
 ::
 
-    A-00prologue.tex a bit (23:587)
-    A-00prologue.tex a bit (53:496)
-    A-00prologue.tex a bit (55:611)
-    A-00prologue.tex actually (49:22)
-    A-00prologue.tex began (13:215)
-    A-00prologue.tex begin (3:1)
-    A-00prologue.tex certainly (51:317)
-    A-00prologue.tex completely (39:471)
-    A-00prologue.tex could (15:72)
-    A-00prologue.tex could (19:628)
+    sample-input.txt a bit (23:587)
+    sample-input.txt a bit (53:496)
+    sample-input.txt a bit (55:611)
+    sample-input.txt actually (49:22)
+    sample-input.txt began (13:215)
+    sample-input.txt begin (3:1)
+    sample-input.txt certainly (51:317)
+    sample-input.txt completely (39:471)
+    sample-input.txt could (15:72)
+    sample-input.txt could (19:628)
 
 If no files are specified, input is read via standard input.
+
 
 Options
 -------
@@ -39,6 +57,7 @@ Options
                       (filter words are alphabetized and grouped) and
                       sequential (the order words appear in input). The
                       default is alpha.
+
 
 Word Lists
 ----------
