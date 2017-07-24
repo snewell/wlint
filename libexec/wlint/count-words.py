@@ -7,9 +7,10 @@ import sys
 import wlint.common
 
 
-def print_counts(counts):
+def print_counts(counts, total_words):
     for word, count in counts:
-        print("{}\t{}".format(word, count))
+        ratio = count / total_words
+        print("{}\t{}\t{:.5f}".format(word, count, ratio))
 
 
 class WordCounter(wlint.common.Tool):
@@ -35,6 +36,7 @@ class WordCounter(wlint.common.Tool):
     def setup(self, arguments):
         self.counts = {}
         self.file_count = 0
+        self.total_words = 0
 
         def case_sensitive(word):
             return word
@@ -59,18 +61,21 @@ class WordCounter(wlint.common.Tool):
             else:
                 counts[word] = 1
 
+        file_words = 0
         for text in fileHandle:
             match = self.pattern.search(text)
             while match:
                 word = self.key_builder(match.group(1))
                 update_counts(word, localCounts)
                 update_counts(word, self.counts)
+                file_words += 1
                 match = self.pattern.search(text, match.end())
 
+        self.total_words += file_words
         if localCounts:
             if not self.summarize_only:
-                print("{}:".format(fileHandle.name))
-                print_counts(self.get_counts(localCounts))
+                print("{}: {}".format(fileHandle.name, file_words))
+                print_counts(self.get_counts(localCounts), file_words)
                 print("")
             self.file_count += 1
 
@@ -84,8 +89,8 @@ class WordCounter(wlint.common.Tool):
 
     def display_results(self):
         if self.file_count > 1:
-            print("Total:")
-            print_counts(self.get_counts(self.counts))
+            print("Total: {}".format(self.total_words))
+            print_counts(self.get_counts(self.counts), self.total_words)
 
 
 wordCounter = WordCounter()
