@@ -32,6 +32,11 @@ class WordCounter(wlint.common.Tool):
             help="Print largest counts first [Default: alphabetize words "
             "while printing]",
             action="store_true")
+        self.add_argument(
+            "--ignore",
+            help="A comma-separated list of words to skip while processing "
+                 "input.",
+            default="")
 
     def setup(self, arguments):
         self.counts = {}
@@ -52,6 +57,11 @@ class WordCounter(wlint.common.Tool):
         self.summarize_only = arguments.summarize
         self.sort_count = arguments.sort_count
 
+        self.ignore = { }
+        ignore = arguments.ignore.split(",")
+        for word in ignore:
+            self.ignore[word] = None
+
     def process(self, fileHandle):
         localCounts = {}
 
@@ -66,9 +76,10 @@ class WordCounter(wlint.common.Tool):
             match = self.pattern.search(text)
             while match:
                 word = self.key_builder(match.group(1))
-                update_counts(word, localCounts)
-                update_counts(word, self.counts)
-                file_words += 1
+                if word not in self.ignore:
+                    update_counts(word, localCounts)
+                    update_counts(word, self.counts)
+                    file_words += 1
                 match = self.pattern.search(text, match.end())
 
         self.total_words += file_words
