@@ -30,7 +30,8 @@ Documentation for the other tools is available with the :code:`-h` or
 
 .. code::
 
-   wling list-filter -h
-   usage: list-filter [-h] [--lists LISTS] [--list LIST] [--file FILE]
-                      [file [file ...]]
+   wlint list-filter -h
+   usage: list-filter [-h] [--file FILE] [--lists LISTS] [--list LIST]
+                   [--sort-method SORT_METHOD]
+                   [file [file ...]]
 
