@@ -93,7 +93,8 @@ class WordCounter(wlint.common.Tool):
     def get_counts(self, counts):
         list_items = list(counts.items())
         if self.sort_count:
-            list_items.sort(key=operator.itemgetter(1, 0), reverse=True)
+            list_items.sort(key=operator.itemgetter(0))
+            list_items.sort(key=operator.itemgetter(1), reverse=True)
         else:
             list_items.sort()
         return list_items
