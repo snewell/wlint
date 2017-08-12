@@ -57,7 +57,7 @@ class WordCounter(wlint.common.Tool):
         self.summarize_only = arguments.summarize
         self.sort_count = arguments.sort_count
 
-        self.ignore = { }
+        self.ignore = {}
         ignore = arguments.ignore.split(",")
         for word in ignore:
             self.ignore[word] = None

@@ -26,7 +26,7 @@ class PunctuationStyle(wlint.common.Tool):
         self.result = 0
         checks = wlint.punctuation.PunctuationRules().rules
 
-        self.checks = { }
+        self.checks = {}
         rules = arguments.enable.split(",")
         for rule in rules:
             pattern = re.compile(rule.replace(".", "\.").replace("*", ".*"))
@@ -36,8 +36,9 @@ class PunctuationStyle(wlint.common.Tool):
 
         disable = arguments.disable.split(",")
         for rule in disable:
-            if rule: # don't deal with empty strings
-                pattern = re.compile(rule.replace(".", "\.").replace("*", ".*"))
+            if rule:  # don't deal with empty strings
+                pattern = re.compile(rule.replace(
+                    ".", "\.").replace("*", ".*"))
                 rms = []
                 for message in self.checks:
                     if pattern.match(message):
