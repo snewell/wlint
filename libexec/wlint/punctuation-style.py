@@ -10,17 +10,16 @@ import wlint.punctuation
 class PunctuationStyle(wlint.common.Tool):
 
     def __init__(self):
-        super().__init__("Check for common punctuation issues")
+        super().__init__(description="Check for common punctuation issues")
         self.add_argument(
             "--enable",
             help="Rules to use when processing text.  An asterisk (*) can be "
-                 "used for wildcard matching.  [Default: all rules]",
+                 "used for wildcard matching.",
             default="*")
         self.add_argument(
             "--disable",
             help="Rules to disable when processing text.  If a rule is both "
-                 "enabled and disabled, disable takes precedence.",
-            default="")
+                 "enabled and disabled, disable takes precedence.")
 
     def setup(self, arguments):
         self.result = 0
@@ -34,7 +33,10 @@ class PunctuationStyle(wlint.common.Tool):
                 if pattern.match(message):
                     self.checks[message] = fn
 
-        disable = arguments.disable.split(",")
+        if arguments.disable:
+            disable = arguments.disable.split(",")
+        else:
+            disable = []
         for rule in disable:
             if rule:  # don't deal with empty strings
                 pattern = re.compile(rule.replace(

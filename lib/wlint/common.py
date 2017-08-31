@@ -8,27 +8,38 @@ import wlint.purify
 
 class Tool:
 
-    def __init__(self, description):
-        self.parser = argparse.ArgumentParser(description=description)
+    def __init__(self, *args, **kwargs):
+        self.parser = argparse.ArgumentParser(
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+            *args, **kwargs)
 
         # add common arguments
         self.parser.add_argument(
             "--file",
             help="Process a file.  This is only necessary if an input file "
             "matches an argument (e.g., --help).",
-            action="append",
-            default=[])
+            action="append")
         self.parser.add_argument("files",
                                  help="Files to process.", nargs="*",
                                  metavar="file")
         self.add_argument(
             "--input-type",
             help="Type of input file.  Options are text (plain text) and tex "
-            "(a (La)TeX document).  The default is text.",
+            "(a (La)TeX document).",
             default="text")
+
+        self.sort_methods = None
 
     def add_argument(self, *args, **kwargs):
         self.parser.add_argument(*args, **kwargs)
+
+    def add_sort(self, sort_methods):
+        self.add_argument(
+            "--sort",
+            help="Method to sort output.  Options are: {}".format(
+                sort_methods),
+            default=sort_methods[0])
+        self.sort_methods = sort_methods
 
     def execute(self, *args, **kwargs):
         args = self.parser.parse_args(*args, **kwargs)
@@ -39,7 +50,14 @@ class Tool:
             self.purifier = wlint.purify.tex
         else:
             raise ValueError(
-                "'{}' is not a valid input type".format(arguments.input_type))
+                "'{}' is not a valid input type".format(args.input_type))
+
+        if self.sort_methods:
+            if args.sort in self.sort_methods:
+                self.sort = args.sort
+            else:
+                raise ValueError(
+                    "'{}' is not a valid sort method".format(self.sort))
 
         self.setup(args)
 
@@ -52,12 +70,13 @@ class Tool:
             files -- a list of files to parse (each file should be a
                         full path)"""
 
-            for f in files:
-                try:
-                    with open(f, 'r') as readFile:
-                        self.process(readFile)
-                except FileNotFoundError:
-                    missingFiles.append(f)
+            if files:
+                for f in files:
+                    try:
+                        with open(f, 'r') as readFile:
+                            self.process(readFile)
+                    except FileNotFoundError:
+                        missingFiles.append(f)
 
         if args.files or args.file:
             # parse normal files, plus anything that was passed in via the

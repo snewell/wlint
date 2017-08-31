@@ -16,7 +16,7 @@ def print_counts(counts, total_words):
 class WordCounter(wlint.common.Tool):
 
     def __init__(self):
-        super().__init__("Count the occurrence of each word")
+        super().__init__(description="Count the occurrence of each word")
         # Is there a way to have \w not match numbers?
         self.pattern = re.compile(r"\b([\w\-\']+)\b")
         self.add_argument(
@@ -28,15 +28,11 @@ class WordCounter(wlint.common.Tool):
             help="Only print summarized results.",
             action="store_true")
         self.add_argument(
-            "--sort-count",
-            help="Print largest counts first [Default: alphabetize words "
-            "while printing]",
-            action="store_true")
-        self.add_argument(
             "--ignore",
             help="A comma-separated list of words to skip while processing "
-                 "input.",
-            default="")
+                 "input.")
+
+        self.add_sort(["alpha", "count"])
 
     def setup(self, arguments):
         self.counts = {}
@@ -55,12 +51,13 @@ class WordCounter(wlint.common.Tool):
             self.key_builder = case_insensitive
 
         self.summarize_only = arguments.summarize
-        self.sort_count = arguments.sort_count
+        self.sort_count = self.sort == "count"
 
         self.ignore = {}
-        ignore = arguments.ignore.split(",")
-        for word in ignore:
-            self.ignore[word] = None
+        if arguments.ignore:
+            ignore = arguments.ignore.split(",")
+            for word in ignore:
+                self.ignore[word] = None
 
     def process(self, fileHandle):
         localCounts = {}

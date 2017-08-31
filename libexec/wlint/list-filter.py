@@ -20,21 +20,20 @@ class ListFilter(wlint.common.Tool):
         self.add_argument(
             "--lists",
             help="Change the set of word lists.  This should be a "
-                 "comma-separated list of built-in lists.  [Default={}]"
+                 "comma-separated list of built-in lists."
                  .format(defaultListsStr),
             default=defaultListsStr)
         self.add_argument(
             "--list",
             help="Use a custom word list.  The list should be a plain text "
                  "file with one word per line.",
-            action="append",
-            default=[])
-        self.add_argument(
-            "--sort-method",
-            help="Method to sort discovered words.  Options are alpha (filter"
-            " words are alphabetized and grouped) and sequential (the order "
-            "words appear in input).  The default is alpha.",
-            default="alpha")
+            action="append")
+
+        self.add_sort(["alpha", "sequential"])
+        self.sort_fns = {
+            "alpha": lambda hits: hits.sort(),
+            "sequential": lambda hits: hits.sort(key=operator.itemgetter(1, 2))
+        }
 
     def setup(self, arguments):
         def make_lists():
@@ -47,27 +46,15 @@ class ListFilter(wlint.common.Tool):
 
         words = make_lists()
         # Read any extra lists
-        for wordList in arguments.list:
-            words.addWords(wordList)
+        if arguments.list:
+            for wordList in arguments.list:
+                words.addWords(wordList)
 
         # WordList is complete, so setup variables
         self.filter = wlint.filter.Filter(words, self.purifier)
         self.missingFiles = []
 
-        def alpha_sort(hits):
-            hits.sort()
-
-        def sequential_sort(hits):
-            hits.sort(key=operator.itemgetter(1, 2))
-
-        if arguments.sort_method == "alpha":
-            self.sorter = alpha_sort
-        elif arguments.sort_method == "sequential":
-            self.sorter = sequential_sort
-        else:
-            raise ValueError(
-                "'{}' is not a valid sort option".format(
-                    arguments.sort_method))
+        self.sorter = self.sort_fns[self.sort]
 
     def process(self, fileHandle):
         hits = []
