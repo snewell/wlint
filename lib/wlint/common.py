@@ -5,6 +5,7 @@ import sys
 
 import wlint.purify
 
+
 class Tool:
 
     def __init__(self, description):
@@ -78,6 +79,7 @@ class Tool:
 
     def purify(self, text):
         return self.purifier(text)
+
 
 def execute_tool(tool):
     try:
