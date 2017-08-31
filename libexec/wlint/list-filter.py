@@ -51,7 +51,7 @@ class ListFilter(wlint.common.Tool):
             words.addWords(wordList)
 
         # WordList is complete, so setup variables
-        self.filter = wlint.filter.Filter(words)
+        self.filter = wlint.filter.Filter(words, self.purifier)
         self.missingFiles = []
 
         def alpha_sort(hits):

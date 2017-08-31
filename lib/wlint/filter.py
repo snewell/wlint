@@ -70,12 +70,14 @@ class Filter:
 
     """An object to filter files."""
 
-    def __init__(self, words):
+    def __init__(self, words, purifier):
         """Construct a Filter.
 
         Arguments:
-        words -- the WordList to use"""
+        words -- the WordList to use
+        purifer -- the purification function to use"""
         self.words = words
+        self.purifier = purifier
 
     def parseLine(self, line, fn):
         """Search one line of text for any filter words.
@@ -100,4 +102,5 @@ class Filter:
         line = 0
         for text in fileHandle:
             line += 1
-            self.parseLine(text, lambda word, col: fn(word, line, col))
+            self.parseLine(self.purifier(text), lambda word,
+                           col: fn(word, line, col))

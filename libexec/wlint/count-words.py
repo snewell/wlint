@@ -73,6 +73,7 @@ class WordCounter(wlint.common.Tool):
 
         file_words = 0
         for text in fileHandle:
+            text = self.purify(text)
             match = self.pattern.search(text)
             while match:
                 word = self.key_builder(match.group(1))

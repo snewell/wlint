@@ -50,6 +50,7 @@ class PunctuationStyle(wlint.common.Tool):
         lineNumber = 0
         hits = []
         for text in fileHandle:
+            text = self.purify(text)
             lineNumber += 1
             for (message, fn) in self.checks.items():
                 if fn(

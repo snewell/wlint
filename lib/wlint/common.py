@@ -3,6 +3,7 @@
 import argparse
 import sys
 
+import wlint.purify
 
 class Tool:
 
@@ -19,12 +20,25 @@ class Tool:
         self.parser.add_argument("files",
                                  help="Files to process.", nargs="*",
                                  metavar="file")
+        self.add_argument(
+            "--input-type",
+            help="Type of input file.  Options are text (plain text) and tex "
+            "(a (La)TeX document).  The default is text.",
+            default="text")
 
     def add_argument(self, *args, **kwargs):
         self.parser.add_argument(*args, **kwargs)
 
     def execute(self, *args, **kwargs):
         args = self.parser.parse_args(*args, **kwargs)
+
+        if args.input_type == "text":
+            self.purifier = wlint.purify.text
+        elif args.input_type == "tex":
+            self.purifier = wlint.purify.tex
+        else:
+            raise ValueError(
+                "'{}' is not a valid input type".format(arguments.input_type))
 
         self.setup(args)
 
@@ -62,6 +76,8 @@ class Tool:
     def display_results(self):
         pass
 
+    def purify(self, text):
+        return self.purifier(text)
 
 def execute_tool(tool):
     try:

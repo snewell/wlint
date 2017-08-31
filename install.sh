@@ -115,6 +115,7 @@ libWtoolLists=" \
 	lib/wlint/common.py \
 	lib/wlint/filter.py \
 	lib/wlint/punctuation.py \
+	lib/wlint/purify.py \
 "
 filterLists=" \
 	share/wlint/filter-lists/filter-words.txt \
