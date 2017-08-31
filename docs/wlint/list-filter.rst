@@ -44,19 +44,20 @@ If no files are specified, input is read via standard input.
 
 Options
 -------
--h, --help            show this help message and exit
---file FILE           Process a file. This is only necessary if an input
-                      file matches an argument (e.g., --help).
---lists LISTS         Change the set of word lists. This should be a comma-
-                      separated list of built-in lists.
-                      [Default=filter,thought,weasel]
---list LIST           Use a custom word list. The list should be a plain
-                      text file with one word per line.
---sort-method SORT_METHOD
-                      Method to sort discovered words. Options are alpha
-                      (filter words are alphabetized and grouped) and
-                      sequential (the order words appear in input). The
-                      default is alpha.
+  -h, --help            show this help message and exit
+  --file FILE           Process a file. This is only necessary if an input
+                        file matches an argument (e.g., --help). (default:
+                        None)
+  --input-type INPUT_TYPE
+                        Type of input file. Options are text (plain text) and
+                        tex (a (La)TeX document). (default: text)
+  --lists LISTS         Change the set of word lists. This should be a comma-
+                        separated list of built-in lists. (default:
+                        filter,thought,weasel)
+  --list LIST           Use a custom word list. The list should be a plain
+                        text file with one word per line. (default: None)
+  --sort SORT           Method to sort output. Options are: ['alpha',
+                        'sequential'] (default: alpha)
 
 
 Word Lists
@@ -72,3 +73,13 @@ files be scanned.  The following are all valid entries in a word list file:
 Matches are case-insensitive, so "a bit," "a BIT," and "A bIt" would all be
 picked up by the first entry in the sample list.  Likewise, "that's" will
 match a string of characters with a single-quote, not an apostrophe.
+
+
+Sort Methods
+------------
+alpha
+    Detected words will be presented alphabetically, grouped by word.  This is
+    useful if trying to deal with all instances of a given word (e.g., you're
+    trying to reduce a word or phrase you use as a crutch).
+sequential
+    Detected words be presented in the order they appear in the input.

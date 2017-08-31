@@ -48,12 +48,25 @@ If no files are specified, input is read via standard input.
 
 Options
 -------
--h, --help        show this help message and exit
---file FILE       Process a file. This is only necessary if an input file
-                  matches an argument (e.g., --help).
---case-sensitive  Treat words differently if they use a different case.
---summarize       Only print summarized results.
---sort-count      Print largest counts first [Default: alphabetize words
-                  while printing]
---ignore IGNORE   A comma-separated list of words to skip while processing
-                  input.
+  -h, --help            show this help message and exit
+  --file FILE           Process a file. This is only necessary if an input
+                        file matches an argument (e.g., --help). (default:
+                        None)
+  --input-type INPUT_TYPE
+                        Type of input file. Options are text (plain text) and
+                        tex (a (La)TeX document). (default: text)
+  --case-sensitive      Treat words differently if they use a different case.
+                        (default: False)
+  --summarize           Only print summarized results. (default: False)
+  --ignore IGNORE       A comma-separated list of words to skip while
+                        processing input. (default: None)
+  --sort SORT           Method to sort output. Options are: ['alpha', 'count']
+                        (default: alpha)
+
+
+Sort Methods
+------------
+alpha
+    Words are sorted alphabetically.
+count
+    Words are sorted based on their number of occurances.

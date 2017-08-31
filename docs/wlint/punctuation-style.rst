@@ -38,13 +38,18 @@ If no files are specified, input is read via standard input.
 
 Options
 -------
--h, --help          Show this help message and exit.
---file FILE         Process a file. This is only necessary if an input file
-                    matches an argument (e.g., --help).
---enable ENABLE     Rules to use when processing text. An asterisk (*) can
-                    be used for wildcard matching. [Default: all rules]
---disable DISABLE   Rules to disable when processing text. If a rule is both
-                    enabled and disabled, disable takes precedence.
+  -h, --help            show this help message and exit
+  --file FILE           Process a file. This is only necessary if an input
+                        file matches an argument (e.g., --help). (default:
+                        None)
+  --input-type INPUT_TYPE
+                        Type of input file. Options are text (plain text) and
+                        tex (a (La)TeX document). (default: text)
+  --enable ENABLE       Rules to use when processing text. An asterisk (\*) can
+                        be used for wildcard matching. (default: \*)
+  --disable DISABLE     Rules to disable when processing text. If a rule is
+                        both enabled and disabled, disable takes precedence.
+                        (default: None)
 
 
 Checks
@@ -53,8 +58,8 @@ Checks are named are prefixed with a general-purpose name followed by the
 specific issue.  When enabling and disabling rules, disabling takes precedence
 if there's a conflict.
 
-An asterisk (*) can be used for wildcard matching in rule patterns.  For
-example, endash.* will match any rule starting with ``endash.``.
+An asterisk (\*) can be used for wildcard matching in rule patterns.  For
+example, endash.\* will match any rule starting with ``endash.``.
 
 :colon.missing-space:
     Detect cases where a colon (:) isn't followed by a space (e.g.,
