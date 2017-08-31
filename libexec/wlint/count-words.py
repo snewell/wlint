@@ -18,7 +18,7 @@ class WordCounter(wlint.common.Tool):
     def __init__(self):
         super().__init__("Count the occurrence of each word")
         # Is there a way to have \w not match numbers?
-        self.pattern = re.compile("\\b([a-zA-Z\\-\\']+)\\b")
+        self.pattern = re.compile(r"\b([\w\-\']+)\b")
         self.add_argument(
             "--case-sensitive",
             help="Treat words differently if they use a different case.",

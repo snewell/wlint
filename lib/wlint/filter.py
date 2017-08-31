@@ -16,7 +16,7 @@ class WordList:
 
         Arguments:
         word -- the word to add"""
-        pattern = re.compile("\\b{}\\b".format(word), re.IGNORECASE)
+        pattern = re.compile(r"\b{}\b".format(word), re.IGNORECASE)
         self.words[word] = pattern
 
     def addWords(self, path):
