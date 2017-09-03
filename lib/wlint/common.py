@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import argparse
+import errno
 import sys
 
 import wlint.purify
@@ -111,6 +112,14 @@ def execute_tool(tool):
                     tool.missingFiles),
                 file=sys.stderr)
             exit(1)
+
+    except IOError as e:
+        if e.errno == errno.EPIPE:
+            # This probably means we were piped into something that terminated
+            # (e.g., head).  Might be a better way to handle this, but for now
+            # silently swallowing the error isn't terrible.
+            pass
+
     except Exception as e:
         print("Error: {}".format(str(e)), file=sys.stderr)
         exit(1)
