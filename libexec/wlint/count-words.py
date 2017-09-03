@@ -17,8 +17,17 @@ class WordCounter(wlint.common.Tool):
 
     def __init__(self):
         super().__init__(description="Count the occurrence of each word")
+        right_single_quote = "’"
         # Is there a way to have \w not match numbers?
-        self.pattern = re.compile(r"\b([\w\-\']+)\b")
+        # We're going to a call a word anything with these properties:
+        #  - surrounded by word boundaries (\b)
+        #  - 1 or more:
+        #    - word characters
+        #    - hyphens
+        #    - single quotes (for "plain text" apostrophes)
+        #    - right single quotes (for "smart" apostrophes)
+        self.pattern = re.compile(
+            r"\b([\w\-\'{}]+)\b".format(right_single_quote))
         self.add_argument(
             "--case-sensitive",
             help="Treat words differently if they use a different case.",
