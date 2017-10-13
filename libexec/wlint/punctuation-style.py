@@ -48,19 +48,20 @@ class PunctuationStyle(wlint.common.Tool):
                 for message in rms:
                     del self.checks[message]
 
-    def process(self, fileHandle):
-        lineNumber = 0
+    def _process(self, file_handle):
+        line_number = 0
         hits = []
-        for text in fileHandle:
+        for text in file_handle:
             text = self.purify(text)
-            lineNumber += 1
+            line_number += 1
             for (message, fn) in self.checks.items():
-                if fn(
-                    text, lambda pos: hits.append(
-                        (lineNumber, pos, message))):
+                if fn(text, lambda pos:
+                        hits.append((line_number, pos, message))):
                     self.result = 1
+        return hits
 
-        hits.sort()
+    def process(self, fileHandle):
+        hits = sorted(self._process(fileHandle))
         for (line, col, message) in hits:
             print("{}-{}:{} {}".format(fileHandle.name, line, col, message))
 

@@ -1,5 +1,7 @@
 wlint
 =====
+|code-climate|
+
 wlint is a collection of scripts and tools that can be used to help with
 writing.  The project is designed for a Unix-like environment.
 
@@ -35,3 +37,7 @@ Documentation for the other tools is available with the :code:`-h` or
                    [--sort-method SORT_METHOD]
                    [file [file ...]]
 
+
+.. |code-climate| image::
+    https://api.codeclimate.com/v1/badges/f2d5ee1555ff7ae6a0ff/maintainability
+    :target: https://codeclimate.com/github/snewell/wlint/maintainability

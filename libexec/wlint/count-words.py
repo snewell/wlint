@@ -68,32 +68,36 @@ class WordCounter(wlint.common.Tool):
             for word in ignore:
                 self.ignore[word] = None
 
-    def process(self, fileHandle):
-        localCounts = {}
-
+    def _count_words(self, file_handle, local_counts):
         def update_counts(word, counts):
             if word in counts:
                 counts[word] += 1
             else:
                 counts[word] = 1
 
-        file_words = 0
-        for text in fileHandle:
+        file_count = 0
+        for text in file_handle:
             text = self.purify(text)
             match = self.pattern.search(text)
             while match:
                 word = self.key_builder(match.group(1))
                 if word not in self.ignore:
-                    update_counts(word, localCounts)
+                    update_counts(word, local_counts)
                     update_counts(word, self.counts)
-                    file_words += 1
+                    file_count += 1
                 match = self.pattern.search(text, match.end())
+        return file_count
 
-        self.total_words += file_words
+    def process(self, fileHandle):
+        localCounts = {}
+
+        current_file_count = self._count_words(fileHandle, localCounts)
+
+        self.total_words += current_file_count
         if localCounts:
             if not self.summarize_only:
-                print("{}: {}".format(fileHandle.name, file_words))
-                print_counts(self.get_counts(localCounts), file_words)
+                print("{}: {}".format(fileHandle.name, current_file_count))
+                print_counts(self.get_counts(localCounts), current_file_count)
                 print("")
             self.file_count += 1
 
