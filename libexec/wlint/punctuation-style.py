@@ -21,23 +21,18 @@ class PunctuationStyle(wlint.common.Tool):
             help="Rules to disable when processing text.  If a rule is both "
                  "enabled and disabled, disable takes precedence.")
 
-    def setup(self, arguments):
-        self.result = 0
-        checks = wlint.punctuation.PunctuationRules().rules
-
-        self.checks = {}
-        rules = arguments.enable.split(",")
+    def _get_enabled_rules(self, enabled_rules):
+        ret = {}
+        rules = enabled_rules.split(",")
         for rule in rules:
             pattern = re.compile(rule.replace(".", "\.").replace("*", ".*"))
-            for (message, fn) in checks:
+            for (message, fn) in wlint.punctuation.PunctuationRules().rules:
                 if pattern.match(message):
-                    self.checks[message] = fn
+                    ret[message] = fn
+        return ret
 
-        if arguments.disable:
-            disable = arguments.disable.split(",")
-        else:
-            disable = []
-        for rule in disable:
+    def _remove_disabled_rules(self, disabled_rules):
+        for rule in disabled_rules:
             if rule:  # don't deal with empty strings
                 pattern = re.compile(rule.replace(
                     ".", "\.").replace("*", ".*"))
@@ -47,6 +42,13 @@ class PunctuationStyle(wlint.common.Tool):
                         rms.append(message)
                 for message in rms:
                     del self.checks[message]
+
+    def setup(self, arguments):
+        self.result = 0
+        self.checks = self._get_enabled_rules(arguments.enable)
+        if arguments.disable:
+            disable = arguments.disable.split(",")
+            self._remove_disabled_rules(disable)
 
     def _process(self, file_handle):
         line_number = 0
