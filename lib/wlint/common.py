@@ -15,11 +15,6 @@ class Tool:
             *args, **kwargs)
 
         # add common arguments
-        self.parser.add_argument(
-            "--file",
-            help="Process a file.  This is only necessary if an input file "
-            "matches an argument (e.g., --help).",
-            action="append")
         self.parser.add_argument("files",
                                  help="Files to process.", nargs="*",
                                  metavar="file")
@@ -79,11 +74,10 @@ class Tool:
                     except FileNotFoundError:
                         missingFiles.append(f)
 
-        if args.files or args.file:
+        if args.files:
             # parse normal files, plus anything that was passed in via the
             # "--file" option
             parseFiles(args.files)
-            parseFiles(args.file)
         else:
             # no files provided, so default to stdin
             self.process(sys.stdin)

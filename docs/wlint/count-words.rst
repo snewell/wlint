@@ -49,9 +49,6 @@ If no files are specified, input is read via standard input.
 Options
 -------
   -h, --help            show this help message and exit
-  --file FILE           Process a file. This is only necessary if an input
-                        file matches an argument (e.g., --help). (default:
-                        None)
   --input-type INPUT_TYPE
                         Type of input file. Options are text (plain text) and
                         tex (a (La)TeX document). (default: text)
