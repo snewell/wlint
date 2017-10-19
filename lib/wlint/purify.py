@@ -10,7 +10,10 @@ def text(s):
 def tex(s):
     def strip_comment(text):
         index = text.find("%")
-        return text[:index]
+        if index == -1:
+            return text
+        else:
+            return text[:index]
 
     pattern = re.compile(r"(\\\w+)")
 
