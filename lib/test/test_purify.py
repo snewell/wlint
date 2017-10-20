@@ -2,12 +2,14 @@
 
 import unittest
 
-import purify
+import env
+
+import wlint.purify
 
 
 class TestPurifyText(unittest.TestCase):
     def setUp(self):
-        self.fn = purify.text
+        self.fn = wlint.purify.text
 
     def test_text(self):
         input = "This is a test."
@@ -17,7 +19,7 @@ class TestPurifyText(unittest.TestCase):
 
 class TestPurifyTex(unittest.TestCase):
     def setUp(self):
-        self.fn = purify.tex
+        self.fn = wlint.purify.tex
 
     def test_text(self):
         input = "This is a test."
