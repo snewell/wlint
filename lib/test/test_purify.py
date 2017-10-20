@@ -6,6 +6,8 @@ import env
 
 import wlint.purify
 
+def compare(ut, input, expected):
+    ut.assertEqual(ut.fn(input), expected)
 
 class TestPurifyText(unittest.TestCase):
     def setUp(self):
@@ -13,8 +15,7 @@ class TestPurifyText(unittest.TestCase):
 
     def test_text(self):
         input = "This is a test."
-        output = self.fn(input)
-        self.assertEqual(input, output)
+        compare(self, input, input)
 
 
 class TestPurifyTex(unittest.TestCase):
@@ -23,25 +24,21 @@ class TestPurifyTex(unittest.TestCase):
 
     def test_text(self):
         input = "This is a test."
-        output = self.fn(input)
-        self.assertEqual(input, output)
+        compare(self, input, input)
 
     def test_strip_comment(self):
         input = "% this is a comment"
-        output = self.fn(input)
-        self.assertEqual(output, "")
+        compare(self, input, "")
 
     def test_strip_command(self):
         input    = R"\textbf{This is bold text.}"
         expected =  "       {This is bold text.}"
-        output = self.fn(input)
-        self.assertEqual(output, expected)
+        compare(self, input, expected)
 
     def test_strip_nested_command(self):
         input    = R"\textbf{This is bold \textit{and slanted text.}}"
         expected =  "       {This is bold        {and slanted text.}}"
-        output = self.fn(input)
-        self.assertEqual(output, expected)
+        compare(self, input, expected)
 
 
 if __name__ == '__main__':
