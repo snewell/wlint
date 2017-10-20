@@ -20,8 +20,7 @@ class ListFilter(wlint.common.Tool):
         self.add_argument(
             "--lists",
             help="Change the set of word lists.  This should be a "
-                 "comma-separated list of built-in lists."
-                 .format(defaultListsStr),
+                 "comma-separated list of built-in lists.",
             default=defaultListsStr)
         self.add_argument(
             "--list",

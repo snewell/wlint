@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-import operator
 import re
 
 import wlint.common
@@ -21,7 +20,7 @@ class PunctuationStyle(wlint.common.Tool):
             help="Rules to disable when processing text.  If a rule is both "
                  "enabled and disabled, disable takes precedence.")
 
-    def _get_enabled_rules(self, enabled_rules):
+    def _get_enabled_rules(enabled_rules):
         ret = {}
         rules = enabled_rules.split(",")
         for rule in rules:
@@ -45,7 +44,7 @@ class PunctuationStyle(wlint.common.Tool):
 
     def setup(self, arguments):
         self.result = 0
-        self.checks = self._get_enabled_rules(arguments.enable)
+        self.checks = PunctuationStyle._get_enabled_rules(arguments.enable)
         if arguments.disable:
             disable = arguments.disable.split(",")
             self._remove_disabled_rules(disable)

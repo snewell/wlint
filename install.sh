@@ -73,7 +73,7 @@ install_helper() {
 
 	shift 2
 	for f in ${@}; do
-		"${runner}" "${f}" "${path}"
+		"${runner}" "${basedir}/${f}" "${path}"
 	done
 }
 

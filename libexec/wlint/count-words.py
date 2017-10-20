@@ -2,7 +2,6 @@
 
 import operator
 import re
-import sys
 
 import wlint.common
 
