@@ -1,5 +1,6 @@
 wlint
 =====
+|codacy|
 |code-climate|
 
 wlint is a collection of scripts and tools that can be used to help with
@@ -37,6 +38,10 @@ Documentation for the other tools is available with the :code:`-h` or
                    [--sort-method SORT_METHOD]
                    [file [file ...]]
 
+
+.. |codacy| image::
+    https://api.codacy.com/project/badge/Grade/607e03f7700d4e1c958dc5c4d7bb588f
+    :target: https://www.codacy.com/app/snewell/wlint?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=snewell/wlint&amp;utm_campaign=Badge_Grade
 
 .. |code-climate| image::
     https://api.codeclimate.com/v1/badges/f2d5ee1555ff7ae6a0ff/maintainability
