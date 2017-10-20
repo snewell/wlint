@@ -4,6 +4,7 @@ import operator
 import re
 
 import wlint.common
+import wlint.wordcounter
 
 
 def print_counts(counts, total_words):
@@ -16,7 +17,6 @@ class WordCounter(wlint.common.Tool):
 
     def __init__(self):
         super().__init__(description="Count the occurrence of each word")
-        right_single_quote = "’"
         # Is there a way to have \w not match numbers?
         # We're going to a call a word anything with these properties:
         #  - surrounded by word boundaries (\b)
@@ -25,8 +25,6 @@ class WordCounter(wlint.common.Tool):
         #    - hyphens
         #    - single quotes (for "plain text" apostrophes)
         #    - right single quotes (for "smart" apostrophes)
-        self.pattern = re.compile(
-            r"\b([\w\-\'{}]+)\b".format(right_single_quote))
         self.add_argument(
             "--case-sensitive",
             help="Treat words differently if they use a different case.",
@@ -67,36 +65,26 @@ class WordCounter(wlint.common.Tool):
             for word in ignore:
                 self.ignore[word] = None
 
-    def _count_words(self, file_handle, local_counts):
-        def update_counts(word, counts):
-            if word in counts:
-                counts[word] += 1
-            else:
-                counts[word] = 1
+    def _count_words(self, file_handle):
+        file_counts = wlint.wordcounter.count_handle(file_handle,
+                                                     lambda t : self.key_builder(self.purify(t)))
 
-        file_count = 0
-        for text in file_handle:
-            text = self.purify(text)
-            match = self.pattern.search(text)
-            while match:
-                word = self.key_builder(match.group(1))
-                if word not in self.ignore:
-                    update_counts(word, local_counts)
-                    update_counts(word, self.counts)
-                    file_count += 1
-                match = self.pattern.search(text, match.end())
-        return file_count
+        for word in self.ignore:
+            if word in file_counts[0]:
+                file_counts[1] -= file_counts[0][word]
+                del file_counts[0][word]
+
+        return file_counts
 
     def process(self, fileHandle):
-        localCounts = {}
+        current_file_counts = self._count_words(fileHandle)
 
-        current_file_count = self._count_words(fileHandle, localCounts)
-
-        self.total_words += current_file_count
-        if localCounts:
+        self.total_words += current_file_counts[1]
+        if current_file_counts[0]:
             if not self.summarize_only:
-                print("{}: {}".format(fileHandle.name, current_file_count))
-                print_counts(self.get_counts(localCounts), current_file_count)
+                print("{}: {}".format(fileHandle.name, current_file_counts[1]))
+                print_counts(self.get_counts(current_file_counts[0]),
+                             current_file_counts[1])
                 print("")
             self.file_count += 1
 
