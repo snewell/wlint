@@ -18,7 +18,7 @@ def _verify_counts(word_count_result, expected, ut):
 
     ut.assertEqual(word_count_result[1], total_count)
 
-class TestWordCounter(unittest.TestCase):
+class TestCountLine(unittest.TestCase):
     def test_count_empty(self):
         counts = wlint.wordcounter.count_line("")
         self.assertFalse(counts[0])
@@ -79,6 +79,39 @@ class TestWordCounter(unittest.TestCase):
             "is": 1,
             "valid": 1
             }, 3)
+        _verify_counts(counts, expected, self)
+
+
+class TestCountSequence(unittest.TestCase):
+    def test_empty(self):
+        counts = wlint.wordcounter.count_handle([])
+        expected = ({}, 0)
+        _verify_counts(counts, expected, self)
+
+    def test_simple(self):
+        counts = wlint.wordcounter.count_handle(["hello world"])
+        expected = ({
+            "hello": 1,
+            "world": 1
+            }, 2)
+        _verify_counts(counts, expected, self)
+
+    def test_multiple(self):
+        counts = wlint.wordcounter.count_handle(["hello world",
+                                                 "goodbye world"])
+        expected = ({
+            "hello": 1,
+            "goodbye": 1,
+            "world": 2
+            }, 4)
+        _verify_counts(counts, expected, self)
+
+    def test_purified(self):
+        counts = wlint.wordcounter.count_handle(["HELLO WORLD"], lambda w: w.lower())
+        expected = ({
+            "hello": 1,
+            "world": 1
+            }, 2)
         _verify_counts(counts, expected, self)
 
 
