@@ -6,6 +6,7 @@ import re
 _right_single_quote = "’"
 _pattern = re.compile(r"\b([\w\-\'{}]+)\b".format(_right_single_quote))
 
+
 def count_line(text):
     counts = {}
 
@@ -22,9 +23,10 @@ def count_line(text):
 
     return (counts, local_count)
 
+
 def count_handle(handle, purifier=None):
     if not purifier:
-        purifier = lambda t: t
+        def purifier(t): return t
 
     full_counts = {}
     total_word_count = 0

@@ -66,8 +66,8 @@ class WordCounter(wlint.common.Tool):
                 self.ignore[word] = None
 
     def _count_words(self, file_handle):
-        file_counts = wlint.wordcounter.count_handle(file_handle,
-                                                     lambda t : self.key_builder(self.purify(t)))
+        file_counts = wlint.wordcounter.count_handle(
+            file_handle, lambda t: self.key_builder(self.purify(t)))
 
         for word in self.ignore:
             if word in file_counts[0]:

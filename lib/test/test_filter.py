@@ -33,5 +33,6 @@ class TestFilter(unittest.TestCase):
     def test_ctor(self):
         filt = wlint.filter.Filter(self.wl, self.purifier)
 
+
 if __name__ == '__main__':
     unittest.main()
