@@ -2,6 +2,8 @@
 
 import re
 
+import wlint.purify
+
 
 def _regex_rule(pattern_text):
     pattern = re.compile(pattern_text)
@@ -61,6 +63,7 @@ def _correct_space_rule(name, single, double):
             hit = False
 
             def check_pos(pos):
+                nonlocal hit
                 if text[
                         pos +
                         1] != thin_space_nonbreak:
@@ -208,7 +211,7 @@ def check_rules(rules, text, hit_fn):
 
 def check_handle(rules, handle, hit_fn, purifier=None):
     if not purifier:
-        def purifier(t): return t
+        purifier = wline.purify.text
 
     line_number = 0
     for text in handle:

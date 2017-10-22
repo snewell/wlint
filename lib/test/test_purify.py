@@ -7,8 +7,8 @@ import env
 import wlint.purify
 
 
-def compare(ut, input, expected):
-    ut.assertEqual(ut.fn(input), expected)
+def compare(ut, text, expected):
+    ut.assertEqual(ut.fn(text), expected)
 
 
 class TestPurifyText(unittest.TestCase):

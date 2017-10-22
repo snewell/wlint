@@ -2,6 +2,7 @@
 
 import re
 
+import wlint.purify
 
 _right_single_quote = "’"
 _pattern = re.compile(r"\b([\w\-\'{}]+)\b".format(_right_single_quote))
@@ -26,7 +27,7 @@ def count_line(text):
 
 def count_handle(handle, purifier=None):
     if not purifier:
-        def purifier(t): return t
+        purifier = wlint.purify.text
 
     full_counts = {}
     total_word_count = 0
