@@ -23,9 +23,10 @@ class PunctuationStyle(wlint.common.Tool):
     def _get_enabled_rules(enabled_rules):
         ret = {}
         rules = enabled_rules.split(",")
+        all_rules = wlint.punctuation.get_all_rules()
         for rule in rules:
             pattern = re.compile(rule.replace(".", "\.").replace("*", ".*"))
-            for (message, fn) in wlint.punctuation.PunctuationRules().rules:
+            for (message, fn) in all_rules:
                 if pattern.match(message):
                     ret[message] = fn
         return ret
