@@ -96,6 +96,15 @@ def _get_quote_rules():
 
     return rules
 
+def _get_dash_rules():
+    rules = [("emdash.replace-double-hyphen",
+              _regex_rule("\\-\\-")),
+             ("emdash.preceeding-space",
+              _pair_regex("\\s", emdash)),
+             ("emdash.trailing-space",
+              _pair_regex(emdash, "\\s"))]
+    return rules
+
 def _colon_rule(name, colon):
     rules = []
     # a colon might be followed by a digit if it's time
@@ -112,13 +121,7 @@ def _colon_rule(name, colon):
     return rules
 
 def _get_colon_rules():
-    rules = [("emdash.replace-double-hyphen",
-              _regex_rule("\\-\\-")),
-             ("emdash.preceeding-space",
-              _pair_regex("\\s", emdash)),
-             ("emdash.trailing-space",
-              _pair_regex(emdash, "\\s"))]
-
+    rules = []
     rules += _colon_rule("colon", ":")
     rules += _colon_rule("semicolon", ";")
 
@@ -178,6 +181,7 @@ def _get_range_rules(pattern):
 
 def get_all_rules():
     rules = _get_quote_rules()
+    rules += _get_dash_rules()
     rules += _get_colon_rules()
     rules += _get_time_rules()
     rules += _get_range_rules(R"\d+")
