@@ -211,7 +211,7 @@ def check_rules(rules, text, hit_fn):
 
 def check_handle(rules, handle, hit_fn, purifier=None):
     if not purifier:
-        purifier = wline.purify.text
+        purifier = wlint.purify.text
 
     line_number = 0
     for text in handle:
