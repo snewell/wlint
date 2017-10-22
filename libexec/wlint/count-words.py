@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import operator
-import re
 
 import wlint.common
 import wlint.wordcounter

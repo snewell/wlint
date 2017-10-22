@@ -6,8 +6,10 @@ import env
 
 import wlint.punctuation
 
+
 def _run_rules(ut, text, expected_rule=None, expected_position=None):
     hit = False
+
     def hit_fn(rule_message, pos):
         nonlocal hit
 
@@ -36,7 +38,11 @@ class TestQuotationRules(unittest.TestCase):
                                                          wlint.punctuation.right_single_quote,
                                                          wlint.punctuation.thin_space_nonbreak,
                                                          wlint.punctuation.right_double_quote)
-        _run_rules(self, text, "quotation.missing-space-opening-double-single", 0)
+        _run_rules(
+            self,
+            text,
+            "quotation.missing-space-opening-double-single",
+            0)
 
     def test_incorrect_space_plain(self):
         text = "{} {}This is a nested quote{}{}{}".format(wlint.punctuation.left_double_quote,
@@ -44,7 +50,11 @@ class TestQuotationRules(unittest.TestCase):
                                                           wlint.punctuation.right_single_quote,
                                                           wlint.punctuation.thin_space_nonbreak,
                                                           wlint.punctuation.right_double_quote)
-        _run_rules(self, text, "quotation.incorrect-space-opening-double-single", 0)
+        _run_rules(
+            self,
+            text,
+            "quotation.incorrect-space-opening-double-single",
+            0)
 
     def test_incorrect_space_break(self):
         text = "{}{}{}This is a nested quote{}{}{}".format(wlint.punctuation.left_double_quote,
@@ -53,7 +63,12 @@ class TestQuotationRules(unittest.TestCase):
                                                            wlint.punctuation.right_single_quote,
                                                            wlint.punctuation.thin_space_nonbreak,
                                                            wlint.punctuation.right_double_quote)
-        _run_rules(self, text, "quotation.incorrect-space-opening-double-single", 0)
+        _run_rules(
+            self,
+            text,
+            "quotation.incorrect-space-opening-double-single",
+            0)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -16,8 +16,8 @@ class TestPurifyText(unittest.TestCase):
         self.fn = wlint.purify.text
 
     def test_text(self):
-        input = "This is a test."
-        compare(self, input, input)
+        text = "This is a test."
+        compare(self, text, text)
 
 
 class TestPurifyTex(unittest.TestCase):
@@ -25,22 +25,22 @@ class TestPurifyTex(unittest.TestCase):
         self.fn = wlint.purify.tex
 
     def test_text(self):
-        input = "This is a test."
-        compare(self, input, input)
+        text = "This is a test."
+        compare(self, text, text)
 
     def test_strip_comment(self):
-        input = "% this is a comment"
-        compare(self, input, "")
+        text = "% this is a comment"
+        compare(self, text, "")
 
     def test_strip_command(self):
-        input = R"\textbf{This is bold text.}"
+        text = R"\textbf{This is bold text.}"
         expected = "       {This is bold text.}"
-        compare(self, input, expected)
+        compare(self, text, expected)
 
     def test_strip_nested_command(self):
-        input = R"\textbf{This is bold \textit{and slanted text.}}"
+        text = R"\textbf{This is bold \textit{and slanted text.}}"
         expected = "       {This is bold        {and slanted text.}}"
-        compare(self, input, expected)
+        compare(self, text, expected)
 
 
 if __name__ == '__main__':

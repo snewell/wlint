@@ -31,7 +31,7 @@ class PunctuationStyle(wlint.common.Tool):
                     ret[message] = fn
         return ret
 
-    def _remove_disabled_rules( disabled_rules, checks):
+    def _remove_disabled_rules(disabled_rules, checks):
         for rule in disabled_rules:
             if rule:  # don't deal with empty strings
                 pattern = re.compile(rule.replace(

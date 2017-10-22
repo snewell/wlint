@@ -34,6 +34,7 @@ thin_space_nonbreak = " "
 emdash = "—"
 endash = "–"
 
+
 def _quote_order_rule(name, single, double):
     rules = []
     rules.append((
@@ -45,10 +46,12 @@ def _quote_order_rule(name, single, double):
 
     return rules
 
+
 def _double_punctuation_rule(name, quote):
     return [(
         "quotation.consecutive-{}-quotes".format(name),
         _pair_regex(quote, quote))]
+
 
 def _correct_space_rule(name, single, double):
     def correct_space_builder(first, second):
@@ -74,6 +77,7 @@ def _correct_space_rule(name, single, double):
             ("quotation.incorrect-space-{}-double-single".format(name),
              correct_space_builder(double, single))]
 
+
 def _get_quote_rules():
     rules = _quote_order_rule("opening",
                               left_single_quote,
@@ -96,6 +100,7 @@ def _get_quote_rules():
 
     return rules
 
+
 def _get_dash_rules():
     rules = [("emdash.replace-double-hyphen",
               _regex_rule("\\-\\-")),
@@ -104,6 +109,7 @@ def _get_dash_rules():
              ("emdash.trailing-space",
               _pair_regex(emdash, "\\s"))]
     return rules
+
 
 def _colon_rule(name, colon):
     rules = []
@@ -120,6 +126,7 @@ def _colon_rule(name, colon):
 
     return rules
 
+
 def _get_colon_rules():
     rules = []
     rules += _colon_rule("colon", ":")
@@ -127,11 +134,13 @@ def _get_colon_rules():
 
     return rules
 
+
 def _uppercase_ampm_builder(time_regex_with_space):
     rules = []
+
     def builder(first, second):
         ampm_regex_uppercase = "(?:[{}]\\.?{}\\.?)".format(first,
-                                                            second)
+                                                           second)
         rules.append(("time.uppercase-{}{}".format(first, second),
                       _pair_regex(time_regex_with_space,
                                   ampm_regex_uppercase)))
@@ -142,6 +151,7 @@ def _uppercase_ampm_builder(time_regex_with_space):
 
     return rules
 
+
 def _get_time_rules():
     time_regex = "(?:1[0-2]|0?[1-9]):(?:[0-5][0-9])"
     time_regex_with_space = "(?:1[0-2]|0?[1-9]):(?:[0-5][0-9] ?)"
@@ -151,12 +161,13 @@ def _get_time_rules():
     rules = []
     rules.append(("time.missing-periods",
                   _pair_regex(time_regex_with_space,
-                                    ampm_regex_no_periods)))
+                              ampm_regex_no_periods)))
     rules.append(("time.missing-space",
                   _pair_regex(time_regex, ampm_regex)))
     rules += _uppercase_ampm_builder(time_regex_with_space)
 
     return rules
+
 
 def _get_range_rules(pattern):
     rules = []
@@ -179,6 +190,7 @@ def _get_range_rules(pattern):
 
     return rules
 
+
 def get_all_rules():
     rules = _get_quote_rules()
     rules += _get_dash_rules()
@@ -188,15 +200,24 @@ def get_all_rules():
 
     return rules
 
+
 def check_rules(rules, text, hit_fn):
     for (message, fn) in rules:
         fn(text, lambda pos: hit_fn(message, pos))
 
+
 def check_handle(rules, handle, hit_fn, purifier=None):
     if not purifier:
-        purifier = lambda t: t
+        def purifier(t): return t
 
     line_number = 0
     for text in handle:
         line_number += 1
-        check_rules(rules, purifier(text), lambda message, pos: hit_fn(line_number, message, pos))
+        check_rules(
+            rules,
+            purifier(text),
+            lambda message,
+            pos: hit_fn(
+                line_number,
+                message,
+                pos))

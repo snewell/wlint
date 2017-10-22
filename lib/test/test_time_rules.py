@@ -6,8 +6,10 @@ import env
 
 import wlint.punctuation
 
+
 def _run_rules(ut, text, expected_rule=None, expected_position=None):
     hit = False
+
     def hit_fn(rule_message, pos):
         nonlocal hit
 

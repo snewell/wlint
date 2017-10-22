@@ -6,8 +6,10 @@ import env
 
 import wlint.punctuation
 
+
 def _run_rules(ut, text, expected_rule=None, expected_position=None):
     hit = False
+
     def hit_fn(rule_message, pos):
         nonlocal hit
 
@@ -40,6 +42,7 @@ class TestColonRules(unittest.TestCase):
     def test_missing_space_semicolon(self):
         text = "My favorite color is green;it's the best."
         _run_rules(self, text, "semicolon.missing-space", 26)
+
 
 if __name__ == '__main__':
     unittest.main()
