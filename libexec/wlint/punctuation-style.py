@@ -31,35 +31,35 @@ class PunctuationStyle(wlint.common.Tool):
                     ret[message] = fn
         return ret
 
-    def _remove_disabled_rules(self, disabled_rules):
+    def _remove_disabled_rules( disabled_rules, checks):
         for rule in disabled_rules:
             if rule:  # don't deal with empty strings
                 pattern = re.compile(rule.replace(
                     ".", "\.").replace("*", ".*"))
                 rms = []
-                for message in self.checks:
+                for message in checks:
                     if pattern.match(message):
                         rms.append(message)
                 for message in rms:
-                    del self.checks[message]
+                    del checks[message]
+
+        return checks
 
     def setup(self, arguments):
         self.result = 0
-        self.checks = PunctuationStyle._get_enabled_rules(arguments.enable)
+        checks = PunctuationStyle._get_enabled_rules(arguments.enable)
         if arguments.disable:
             disable = arguments.disable.split(",")
-            self._remove_disabled_rules(disable)
+            checks = PunctuationStyle._remove_disabled_rules(disable, checks)
+
+        self.checks = []
+        for (message, fn) in checks.items():
+            self.checks.append((message, fn))
 
     def _process(self, file_handle):
-        line_number = 0
         hits = []
-        for text in file_handle:
-            text = self.purify(text)
-            line_number += 1
-            for (message, fn) in self.checks.items():
-                if fn(text, lambda pos:
-                        hits.append((line_number, pos, message))):
-                    self.result = 1
+        wlint.punctuation.check_handle(self.checks, file_handle,
+                                       lambda line_number, message, pos: hits.append((line_number, pos, message)), self.purify)
         return hits
 
     def process(self, fileHandle):

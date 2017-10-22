@@ -183,3 +183,16 @@ def get_all_rules():
     rules += _get_range_rules(R"\d+")
 
     return rules
+
+def check_rules(rules, text, hit_fn):
+    for (message, fn) in rules:
+        fn(text, lambda pos: hit_fn(message, pos))
+
+def check_handle(rules, handle, hit_fn, purifier=None):
+    if not purifier:
+        purifier = lambda t: t
+
+    line_number = 0
+    for text in handle:
+        line_number += 1
+        check_rules(rules, purifier(text), lambda message, pos: hit_fn(line_number, message, pos))
