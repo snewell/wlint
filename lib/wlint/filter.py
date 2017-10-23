@@ -3,6 +3,8 @@
 import os
 import re
 
+import wlint.purify
+
 
 class WordList:
 
@@ -11,7 +13,7 @@ class WordList:
     def __init__(self):
         self.words = {}
 
-    def addWord(self, word):
+    def add_word(self, word):
         """Add a word to the list.
 
         Arguments:
@@ -19,19 +21,19 @@ class WordList:
         pattern = re.compile(r"\b{}\b".format(word), re.IGNORECASE)
         self.words[word] = pattern
 
-    def addWords(self, path):
-        """Add words from a file.  Each entry should be on a new line
-        and is treated as the literal entry.
+    def add_word_sequence(self, sequence, purifier=None):
+        """Add a series of words to the word list.
 
         Arguments:
-        path -- path of the file to parse"""
-        try:
-            with open(path, "r") as inputList:
-                for line in inputList:
-                    self.addWord(line[:-1])
-        except FileNotFoundError:
-            raise \
-                ValueError("'{}' is not a word list".format(path))
+        sequence -- some object that can be iterated over.
+        purifier -- A function to run on each item in sequence.  This isn't
+                    needed in most cases, but can be useful if sequence is
+                    something like a file (you wouldn't want the newlines)."""
+        if not purifier:
+            purifier = wlint.purify.text
+
+        for word in sequence:
+            self.add_word(purifier(word))
 
 
 class DirectoryLists:
@@ -53,16 +55,21 @@ class DirectoryLists:
                 self.files.append(m.group(1))
         self.files.sort()
 
-    def buildWordList(self, wordLists):
+    def buildWordList(self, word_lists):
         """Parse built-in word lists for filtering.
 
         Arguments:
-        wordLists -- the subset of built-in lists to use"""
+        word_lists -- the subset of built-in lists to use"""
         words = WordList()
 
-        for wordList in wordLists:
-            filePath = "{}/{}-words.txt".format(self.path, wordList)
-            words.addWords(filePath)
+        for word_list in word_lists:
+            file_path = "{}/{}-words.txt".format(self.path, word_list)
+            try:
+                with open(file_path, "r") as input_list:
+                    words.add_word_sequence(input_list, lambda t: t[:-1])
+            except FileNotFoundError:
+                raise \
+                    ValueError("'{}' is not a word list".format(file_path))
         return words
 
 
@@ -70,16 +77,14 @@ class Filter:
 
     """An object to filter files."""
 
-    def __init__(self, words, purifier):
+    def __init__(self, words):
         """Construct a Filter.
 
         Arguments:
-        words -- the WordList to use
-        purifer -- the purification function to use"""
+        words -- the WordList to use"""
         self.words = words
-        self.purifier = purifier
 
-    def parseLine(self, line, fn):
+    def filter_line(self, line, fn):
         """Search one line of text for any filter words.
 
         Arguments:
@@ -92,15 +97,20 @@ class Filter:
                 fn(word, match.start())
                 match = pattern.search(line, match.end())
 
-    def parseHandle(self, fileHandle, fn):
-        """Parse a file.
+    def filter_sequence(self, sequence, fn, purifier=None):
+        """Parse a sequence.
 
         Arguments:
-        fileHandle -- a handle to read from
+        sequence -- an iterable object to filter over
         fn -- A function to invoke on each match.  Arguments are: word,
-              lineNumber, column."""
+              lineNumber, column.
+        purifier -- A function to purify each line of text.  If not provided,
+                    the text will not be modified."""
+        if not purifier:
+            purifier = wlint.purify.text
+
         line = 0
-        for text in fileHandle:
+        for text in sequence:
             line += 1
-            self.parseLine(self.purifier(text), lambda word,
-                           col: fn(word, line, col))
+            self.filter_line(purifier(text), lambda word,
+                             col: fn(word, line, col))

@@ -50,16 +50,16 @@ class ListFilter(wlint.common.Tool):
                 words.addWords(wordList)
 
         # WordList is complete, so setup variables
-        self.filter = wlint.filter.Filter(words, self.purifier)
+        self.filter = wlint.filter.Filter(words)
         self.missingFiles = []
 
         self.sorter = self.sort_fns[self.sort]
 
     def process(self, fileHandle):
         hits = []
-        self.filter.parseHandle(fileHandle,
-                                lambda word, line, col: hits.append(
-                                    (word, line, col)))
+        self.filter.filter_sequence(fileHandle,
+                                    lambda word, line, col: hits.append(
+                                        (word, line, col)), self.purify)
         self.print_hits(
             hits,
             lambda word,
