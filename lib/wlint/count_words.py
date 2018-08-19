@@ -75,16 +75,15 @@ class WordCounter(wlint.tool.Tool):
 
         self.add_sort(["alpha", "count"])
 
-    def execute(self, processed_args):
-        counts = {}
+    def execute(self, parsed_args):
         file_count = 0
         total_words = 0
 
-        key_maker = _make_case_fn(processed_args)
-        sort_count = _make_sort_fn(processed_args)
-        summarize_only = processed_args.summarize
-        ignored_words = _make_ignored_words(processed_args)
-        purifier = wlint.tool.get_purifier(processed_args)
+        key_maker = _make_case_fn(parsed_args)
+        sort_count = _make_sort_fn(parsed_args)
+        summarize_only = parsed_args.summarize
+        ignored_words = _make_ignored_words(parsed_args)
+        purifier = wlint.tool.get_purifier(parsed_args)
 
         total_files = 0
         total_counts = {}
@@ -113,7 +112,7 @@ class WordCounter(wlint.tool.Tool):
             total_words += file_counts[1]
             total_files += 1
 
-        missing_files = wlint.tool.iterate_files(processed_args, _count_words)
+        missing_files = wlint.tool.iterate_files(parsed_args, _count_words)
         if file_count > 1 or summarize_only:
             print("Total: {}".format(total_words))
             _print_counts(sort_count(total_counts.keys()), total_counts)

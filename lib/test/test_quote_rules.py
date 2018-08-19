@@ -2,8 +2,6 @@
 
 import unittest
 
-import env
-
 import wlint.punctuation
 
 

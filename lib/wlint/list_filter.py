@@ -1,9 +1,6 @@
 #!/usr/bin/python3
 
 import operator
-import os
-import sys
-
 import pkg_resources
 
 import wlint.tool
@@ -35,10 +32,10 @@ class ListFilter(wlint.tool.Tool):
             "sequential": lambda hits: hits.sort(key=operator.itemgetter(1, 2))
         }
 
-    def execute(self, processed_args):
+    def execute(self, parsed_args):
         def _make_lists():
-            if processed_args.lists:
-                lists = processed_args.lists.split(",")
+            if parsed_args.lists:
+                lists = parsed_args.lists.split(",")
                 # Read the built in lists
                 return defaultLists.buildWordList(lists)
             else:
@@ -46,14 +43,14 @@ class ListFilter(wlint.tool.Tool):
 
         words = _make_lists()
         # Read any extra lists
-        if processed_args.list:
-            for wordList in processed_args.list:
+        if parsed_args.list:
+            for wordList in parsed_args.list:
                 words.addWords(wordList)
 
         # WordList is complete, so setup variables
-        filter = wlint.filter.Filter(words)
-        sorter = self.sort_fns[processed_args.sort]
-        purifier = wlint.tool.get_purifier(processed_args)
+        filter_list = wlint.filter.Filter(words)
+        sorter = self.sort_fns[parsed_args.sort]
+        purifier = wlint.tool.get_purifier(parsed_args)
 
         def _print_hits(hits, fn):
             sorter(hits)
@@ -62,7 +59,7 @@ class ListFilter(wlint.tool.Tool):
 
         def _process(file_handle):
             hits = []
-            filter.filter_sequence(
+            filter_list.filter_sequence(
                 file_handle, lambda word, line, col: hits.append(
                     (word, line, col)), purifier)
             _print_hits(
@@ -70,7 +67,7 @@ class ListFilter(wlint.tool.Tool):
                     "{} {} ({}:{})".format(
                         file_handle.name, word, line, col)))
 
-        return wlint.tool.iterate_files(processed_args, _process)
+        return wlint.tool.iterate_files(parsed_args, _process)
 
 
 def main(args=None):

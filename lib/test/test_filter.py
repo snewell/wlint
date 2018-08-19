@@ -2,8 +2,6 @@
 
 import unittest
 
-import env
-
 import wlint.filter
 import wlint.purify
 
@@ -44,6 +42,8 @@ class TestFilter(unittest.TestCase):
         self.filt.filter_sequence(sequence, build_hits)
         self.assertEqual(len(hits), len(expected))
         for (key, value) in expected.items():
+            del value
+
             self.assertTrue(key in expected)
             self.assertEqual(hits[key], expected[key])
 

@@ -47,18 +47,17 @@ class PunctuationStyle(wlint.tool.Tool):
             help="Rules to disable when processing text.  If a rule is both "
                  "enabled and disabled, disable takes precedence.")
 
-    def execute(self, processed_args):
-        result = 0
-        rules = _get_enabled_rules(processed_args.enable)
-        if processed_args.disable:
-            disable = processed_args.disable.split(",")
+    def execute(self, parsed_args):
+        rules = _get_enabled_rules(parsed_args.enable)
+        if parsed_args.disable:
+            disable = parsed_args.disable.split(",")
             rules = _remove_disabled_rules(disable, rules)
 
         checks = []
         for (message, fn) in rules.items():
             checks.append((message, fn))
 
-        purifier = wlint.tool.get_purifier(processed_args)
+        purifier = wlint.tool.get_purifier(parsed_args)
 
         def _process(file_handle):
             hits = []
@@ -70,7 +69,7 @@ class PunctuationStyle(wlint.tool.Tool):
             for (line, col, message) in hits:
                 print("{}-{}:{} {}".format(file_handle.name, line, col, message))
 
-        return wlint.tool.iterate_files(processed_args, _process)
+        return wlint.tool.iterate_files(parsed_args, _process)
 
 
 def main(args=None):
