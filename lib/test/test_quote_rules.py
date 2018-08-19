@@ -2,7 +2,8 @@
 
 import unittest
 
-import wlint.punctuation
+import wlint.punctuation_style
+import wlint.punctuation.quote
 
 
 def _run_rules(ut, text, expected_rule=None, expected_position=None):
@@ -15,27 +16,27 @@ def _run_rules(ut, text, expected_rule=None, expected_position=None):
         ut.assertEqual(pos, expected_position)
         hit = True
 
-    wlint.punctuation.check_rules(ut.rules, text, hit_fn)
+    wlint.punctuation_style._check_rules(ut.rules, text, hit_fn)
     if expected_position or expected_rule:
         ut.assertTrue(hit)
 
 
 class TestQuotationRules(unittest.TestCase):
     def setUp(self):
-        self.rules = wlint.punctuation._get_quote_rules()
+        self.rules = wlint.punctuation.quote._get_quote_rules()
 
     def test_double_quotes(self):
-        text = "{}{}Don't use duplicate quotes.{}".format(wlint.punctuation.left_single_quote,
-                                                          wlint.punctuation.left_single_quote,
-                                                          wlint.punctuation.right_double_quote)
+        text = "{}{}Don't use duplicate quotes.{}".format(wlint.punctuation.quote._LEFT_SINGLE_QUOTE,
+                                                          wlint.punctuation.quote._LEFT_SINGLE_QUOTE,
+                                                          wlint.punctuation.quote._RIGHT_DOUBLE_QUOTE)
         _run_rules(self, text, "quotation.consecutive-opening-quotes", 0)
 
     def test_missing_space(self):
-        text = "{}{}This is a nested quote{}{}{}".format(wlint.punctuation.left_double_quote,
-                                                         wlint.punctuation.left_single_quote,
-                                                         wlint.punctuation.right_single_quote,
-                                                         wlint.punctuation.thin_space_nonbreak,
-                                                         wlint.punctuation.right_double_quote)
+        text = "{}{}This is a nested quote{}{}{}".format(wlint.punctuation.quote._LEFT_DOUBLE_QUOTE,
+                                                         wlint.punctuation.quote._LEFT_SINGLE_QUOTE,
+                                                         wlint.punctuation.quote._RIGHT_SINGLE_QUOTE,
+                                                         wlint.punctuation.quote._THIN_SPACE_NONBREAK,
+                                                         wlint.punctuation.quote._RIGHT_DOUBLE_QUOTE)
         _run_rules(
             self,
             text,
@@ -43,11 +44,11 @@ class TestQuotationRules(unittest.TestCase):
             0)
 
     def test_incorrect_space_plain(self):
-        text = "{} {}This is a nested quote{}{}{}".format(wlint.punctuation.left_double_quote,
-                                                          wlint.punctuation.left_single_quote,
-                                                          wlint.punctuation.right_single_quote,
-                                                          wlint.punctuation.thin_space_nonbreak,
-                                                          wlint.punctuation.right_double_quote)
+        text = "{} {}This is a nested quote{}{}{}".format(wlint.punctuation.quote._LEFT_DOUBLE_QUOTE,
+                                                          wlint.punctuation.quote._LEFT_SINGLE_QUOTE,
+                                                          wlint.punctuation.quote._RIGHT_SINGLE_QUOTE,
+                                                          wlint.punctuation.quote._THIN_SPACE_NONBREAK,
+                                                          wlint.punctuation.quote._RIGHT_DOUBLE_QUOTE)
         _run_rules(
             self,
             text,
@@ -55,12 +56,12 @@ class TestQuotationRules(unittest.TestCase):
             0)
 
     def test_incorrect_space_break(self):
-        text = "{}{}{}This is a nested quote{}{}{}".format(wlint.punctuation.left_double_quote,
-                                                           wlint.punctuation.thin_sapce_break,
-                                                           wlint.punctuation.left_single_quote,
-                                                           wlint.punctuation.right_single_quote,
-                                                           wlint.punctuation.thin_space_nonbreak,
-                                                           wlint.punctuation.right_double_quote)
+        text = "{}{}{}This is a nested quote{}{}{}".format(wlint.punctuation.quote._LEFT_DOUBLE_QUOTE,
+                                                           wlint.punctuation.quote._THIN_SAPCE_BREAK,
+                                                           wlint.punctuation.quote._LEFT_SINGLE_QUOTE,
+                                                           wlint.punctuation.quote._RIGHT_SINGLE_QUOTE,
+                                                           wlint.punctuation.quote._THIN_SPACE_NONBREAK,
+                                                           wlint.punctuation.quote._RIGHT_DOUBLE_QUOTE)
         _run_rules(
             self,
             text,

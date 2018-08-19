@@ -27,6 +27,14 @@ setup(
         "wlint.puririfiers": [
             "text = wlint.purify:_TEXT_PURIFIER",
             "tex = wlint.purify:_TEX_PURIFIER"
+        ],
+
+        "wlint.punctuation_rules": [
+            "colon = wlint.punctuation.colon:_COLON_RULES",
+            "dash = wlint.punctuation.dash:_DASH_RULES",
+            "quote = wlint.punctuation.quote:_QUOTE_RULES",
+            "range = wlint.punctuation.range:_RANGE_RULES",
+            "time = wlint.punctuation.time:_TIME_RULES"
         ]
     },
 

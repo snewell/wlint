@@ -2,7 +2,8 @@
 
 import unittest
 
-import wlint.punctuation
+import wlint.punctuation_style
+import wlint.punctuation.colon
 
 
 def _run_rules(ut, text, expected_rule=None, expected_position=None):
@@ -15,14 +16,14 @@ def _run_rules(ut, text, expected_rule=None, expected_position=None):
         ut.assertEqual(pos, expected_position)
         hit = True
 
-    wlint.punctuation.check_rules(ut.rules, text, hit_fn)
+    wlint.punctuation_style._check_rules(ut.rules, text, hit_fn)
     if expected_position or expected_rule:
         ut.assertTrue(hit)
 
 
 class TestColonRules(unittest.TestCase):
     def setUp(self):
-        self.rules = wlint.punctuation._get_colon_rules()
+        self.rules = wlint.punctuation.colon._get_colon_rules()
 
     def test_leading_space(self):
         text = "My favorite color : green."

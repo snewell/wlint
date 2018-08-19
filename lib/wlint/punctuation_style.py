@@ -2,17 +2,16 @@
 
 import re
 
+import wlint.plugin
 import wlint.tool
-import wlint.punctuation
 
 
 def _get_enabled_rules(enabled_rules):
     ret = {}
     rules = enabled_rules.split(",")
-    all_rules = wlint.punctuation.get_all_rules()
     for rule in rules:
         pattern = re.compile(rule.replace(".", "\.").replace("*", ".*"))
-        for (message, fn) in all_rules:
+        for (message, fn) in _AVAILABLE_RULES:
             if pattern.match(message):
                 ret[message] = fn
     return ret
@@ -31,6 +30,37 @@ def _remove_disabled_rules(disabled_rules, checks):
                 del checks[message]
 
     return checks
+
+
+def _build_available_rules():
+    found_rules = wlint.plugin.query_plugins("wlint.punctuation_rules")
+    rule_lists = []
+    for name, rules in found_rules.items():
+        del name
+        rule_lists += rules
+    return rule_lists
+
+
+_AVAILABLE_RULES = _build_available_rules()
+
+
+def _check_rules(rules, text, hit_fn):
+    for (message, fn) in rules:
+        fn(text, lambda pos: hit_fn(message, pos))
+
+
+def _check_handle(rules, handle, hit_fn, purifier):
+    line_number = 0
+    for text in handle:
+        line_number += 1
+        _check_rules(
+            rules,
+            purifier(text),
+            lambda message,
+            pos: hit_fn(
+                line_number,
+                message,
+                pos))
 
 
 class PunctuationStyle(wlint.tool.Tool):
@@ -62,10 +92,8 @@ class PunctuationStyle(wlint.tool.Tool):
 
         def _process(file_handle):
             hits = []
-            wlint.punctuation.check_handle(checks, file_handle,
-                                           lambda line_number, message, pos:
-                                               hits.append((line_number, pos,
-                                                            message)), purifier)
+            _check_handle(checks, file_handle,
+                          lambda line_number, message, pos: hits.append((line_number, pos, message)), purifier)
             hits.sort()
             for (line, col, message) in hits:
                 print("{}-{}:{} {}".format(file_handle.name, line, col, message))

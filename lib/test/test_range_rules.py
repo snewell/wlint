@@ -2,7 +2,8 @@
 
 import unittest
 
-import wlint.punctuation
+import wlint.punctuation_style
+import wlint.punctuation.range
 
 
 def _run_rules(ut, text, expected_rule=None, expected_position=None):
@@ -15,21 +16,21 @@ def _run_rules(ut, text, expected_rule=None, expected_position=None):
         ut.assertEqual(pos, expected_position)
         hit = True
 
-    wlint.punctuation.check_rules(ut.rules, text, hit_fn)
+    wlint.punctuation_style._check_rules(ut.rules, text, hit_fn)
     if expected_position or expected_rule:
         ut.assertTrue(hit)
 
 
 class TestRangeRules(unittest.TestCase):
     def setUp(self):
-        self.rules = wlint.punctuation._get_range_rules(R"\d+")
+        self.rules = wlint.punctuation.range._get_range_rules(R"\d+")
 
     def test_preceeding_space(self):
-        text = "10 {}11".format(wlint.punctuation.endash)
+        text = "10 {}11".format(wlint.punctuation.range._ENDASH)
         _run_rules(self, text, "endash.preceeding-space", 0)
 
     def test_trailinging_space(self):
-        text = "10{} 11".format(wlint.punctuation.endash)
+        text = "10{} 11".format(wlint.punctuation.range._ENDASH)
         _run_rules(self, text, "endash.trailing-space", 0)
 
     def test_replace_hyphen(self):
@@ -37,7 +38,7 @@ class TestRangeRules(unittest.TestCase):
         _run_rules(self, text, "endash.replace-hyphen", 0)
 
     def test_replace_emdash(self):
-        text = "10{}11".format(wlint.punctuation.emdash)
+        text = "10{}11".format(wlint.punctuation.range._EMDASH)
         _run_rules(self, text, "endash.replace-emdash", 0)
 
 
