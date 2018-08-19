@@ -9,6 +9,16 @@ import wlint.filter
 listDir = pkg_resources.resource_filename(__name__, "share/filter-lists/")
 defaultLists = wlint.filter.DirectoryLists(listDir)
 
+_SORTS = [
+    ("alpha", "Sort output based on the actual words."),
+    ("sequential", "Sort output based on the order words appear.")
+]
+
+_SORT_FNS = {
+    "alpha": lambda hits: hits.sort(),
+    "sequential": lambda hits: hits.sort(key=operator.itemgetter(1, 2))
+}
+
 
 class ListFilter(wlint.tool.Tool):
 
@@ -26,11 +36,7 @@ class ListFilter(wlint.tool.Tool):
                  "file with one word per line.",
             action="append")
 
-        self.add_sort(["alpha", "sequential"])
-        self.sort_fns = {
-            "alpha": lambda hits: hits.sort(),
-            "sequential": lambda hits: hits.sort(key=operator.itemgetter(1, 2))
-        }
+        self.add_sort(_SORTS)
 
     def execute(self, parsed_args):
         def _make_lists():
@@ -49,7 +55,7 @@ class ListFilter(wlint.tool.Tool):
 
         # WordList is complete, so setup variables
         filter_list = wlint.filter.Filter(words)
-        sorter = self.sort_fns[parsed_args.sort]
+        sorter = _SORT_FNS[parsed_args.sort]
         purifier = wlint.tool.get_purifier(parsed_args)
 
         def _print_hits(hits, fn):

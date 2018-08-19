@@ -45,8 +45,13 @@ class Tool:
         self.add_argument(
             "--sort",
             help="Method to sort output.  Options are: {}".format(
-                sort_methods),
-            default=sort_methods[0])
+                ", ".join([i[0] for i in sort_methods])),
+            default=sort_methods[0][0])
+        self.add_argument(
+            "--list-sorts",
+            action='store_true',
+            help="List supported sort methods.",
+            default=argparse.SUPPRESS)
         self.sort_methods = sort_methods
 
     def execute(self, parsed_args):
@@ -77,8 +82,24 @@ def iterate_files(parsed_args, process_fn):
         return []
 
 
-def _parse_args(parser, *args, **kwargs):
-    parsed_args = parser.parse_args(*args, **kwargs)
+def _check_special_options(tool, parsed_args):
+    def _list_sorts():
+        for (name, description) in tool.sort_methods:
+            print("{} - {}".format(name, description))
+
+    def _list_input_types():
+        for name, info in _INPUT_PURIFIERS.items():
+            print("{} - {}".format(name, info[1]))
+
+    if "list_sorts" in parsed_args and parsed_args.list_sorts:
+        return _list_sorts
+    elif "list_input_types" in parsed_args and parsed_args.list_input_types:
+        return _list_input_types
+    return None
+
+
+def _parse_args(tool, *args, **kwargs):
+    parsed_args = tool.parser.parse_args(*args, **kwargs)
     return parsed_args
 
 
@@ -86,15 +107,19 @@ def execute_tool(tool, args):
     if args is None:
         args = sys.argv[1:]
     try:
-        parsed_args = _parse_args(tool.parser, args)
-        missing_files = tool.execute(parsed_args)
+        parsed_args = _parse_args(tool, args)
+        special_fn = _check_special_options(tool, parsed_args)
+        if special_fn:
+            special_fn()
+        else:
+            missing_files = tool.execute(parsed_args)
 
-        if missing_files:
-            print(
-                "Error opening files: {}".format(
-                    missing_files),
-                file=sys.stderr)
-            exit(1)
+            if missing_files:
+                print(
+                    "Error opening files: {}".format(
+                        missing_files),
+                    file=sys.stderr)
+                exit(1)
 
     except IOError as e:
         if e.errno == errno.EPIPE:

@@ -18,19 +18,21 @@ def _make_case_fn(parsed_args):
     return _case_insensitive
 
 
-def _make_sort_fn(parsed_args):
-    def _alpha_sort(items):
-        return sorted(list(items))
+def _alpha_sort(items):
+    return sorted(list(items))
 
-    def _count_sort(items):
-        item_list = list(items)
-        item_list.sort(key=operator.itemgetter(0))
-        item_list.sort(key=operator.itemgetter(1), reverse=True)
-        return item_list
 
-    if parsed_args.sort == "count":
-        return _count_sort
-    return _alpha_sort
+def _count_sort(items):
+    item_list = list(items)
+    item_list.sort(key=operator.itemgetter(0))
+    item_list.sort(key=operator.itemgetter(1), reverse=True)
+    return item_list
+
+
+_SORT_FNS = {
+    "alpha": _alpha_sort,
+    "count": _count_sort
+}
 
 
 def _make_ignored_words(parsed_args):
@@ -46,6 +48,12 @@ def _print_counts(counts, total_words):
     for word, count in counts:
         ratio = count / total_words
         print("{}\t{}\t{:.5f}".format(word, count, ratio))
+
+
+_SORTS = [
+    ("alpha", "Print words in alphabetical order."),
+    ("count", "Print words based on number of occurances.")
+]
 
 
 class WordCounter(wlint.tool.Tool):
@@ -73,14 +81,14 @@ class WordCounter(wlint.tool.Tool):
             help="A comma-separated list of words to skip while processing "
                  "input.")
 
-        self.add_sort(["alpha", "count"])
+        self.add_sort(_SORTS)
 
     def execute(self, parsed_args):
         file_count = 0
         total_words = 0
 
         key_maker = _make_case_fn(parsed_args)
-        sort_count = _make_sort_fn(parsed_args)
+        sort_count = _SORT_FNS[parsed_args.sort]
         summarize_only = parsed_args.summarize
         ignored_words = _make_ignored_words(parsed_args)
         purifier = wlint.tool.get_purifier(parsed_args)
