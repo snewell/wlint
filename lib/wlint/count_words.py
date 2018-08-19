@@ -102,5 +102,14 @@ class WordCounter(wlint.common.Tool):
             print_counts(self.get_counts(self.counts), self.total_words)
 
 
-wordCounter = WordCounter()
-wlint.common.execute_tool(wordCounter)
+def main(args=None):
+    wordCounter = WordCounter()
+    wlint.common.execute_tool(wordCounter, args)
+
+
+_COUNT_WORDS_COMMAND = (
+    main,
+    "Count words")
+
+if __name__ == '__main__':
+    main()

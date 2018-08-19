@@ -4,11 +4,13 @@ import operator
 import os
 import sys
 
+import pkg_resources
+
 import wlint.common
 import wlint.filter
 
-listDir = "{}/../../share/wlint/filter-lists" \
-    .format(os.path.abspath(os.path.dirname(sys.argv[0])))
+listDir = pkg_resources.resource_filename(__name__, "share/filter-lists/")
+#defaultLists = pkg_resources.resource_listdir("wlint", "../../share/wlint/filter-lists")
 defaultLists = wlint.filter.DirectoryLists(listDir)
 
 
@@ -77,5 +79,14 @@ class ListFilter(wlint.common.Tool):
             fn(word, line, col)
 
 
-listFilter = ListFilter()
-wlint.common.execute_tool(listFilter)
+def main(args=None):
+    listFilter = ListFilter()
+    wlint.common.execute_tool(listFilter, args)
+
+
+_LIST_FILTER_COMMAND = (
+    main,
+    "List filter words")
+
+if __name__ == '__main__':
+    main()

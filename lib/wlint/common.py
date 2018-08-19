@@ -38,24 +38,24 @@ class Tool:
         self.sort_methods = sort_methods
 
     def execute(self, *args, **kwargs):
-        args = self.parser.parse_args(*args, **kwargs)
+        parsed_args = self.parser.parse_args(*args, **kwargs)
 
-        if args.input_type == "text":
+        if parsed_args.input_type == "text":
             self.purifier = wlint.purify.text
-        elif args.input_type == "tex":
+        elif parsed_args.input_type == "tex":
             self.purifier = wlint.purify.tex
         else:
             raise ValueError(
-                "'{}' is not a valid input type".format(args.input_type))
+                "'{}' is not a valid input type".format(parsed_args.input_type))
 
         if self.sort_methods:
-            if args.sort in self.sort_methods:
-                self.sort = args.sort
+            if parsed_args.sort in self.sort_methods:
+                self.sort = parsed_args.sort
             else:
                 raise ValueError(
                     "'{}' is not a valid sort method".format(self.sort))
 
-        self.setup(args)
+        self.setup(parsed_args)
 
         missingFiles = []
 
@@ -74,10 +74,10 @@ class Tool:
                     except FileNotFoundError:
                         missingFiles.append(f)
 
-        if args.files:
+        if parsed_args.files:
             # parse normal files, plus anything that was passed in via the
             # "--file" option
-            parseFiles(args.files)
+            parseFiles(parsed_args.files)
         else:
             # no files provided, so default to stdin
             self.process(sys.stdin)
@@ -95,9 +95,11 @@ class Tool:
         return self.purifier(text)
 
 
-def execute_tool(tool):
+def execute_tool(tool, args):
+    if args is None:
+        args = sys.argv[1:]
     try:
-        tool.execute()
+        tool.execute(args)
         tool.display_results()
 
         if tool.missingFiles:

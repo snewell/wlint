@@ -68,5 +68,14 @@ class PunctuationStyle(wlint.common.Tool):
             print("{}-{}:{} {}".format(fileHandle.name, line, col, message))
 
 
-punctuationStyle = PunctuationStyle()
-wlint.common.execute_tool(punctuationStyle)
+def main(args=None):
+    punctuationStyle = PunctuationStyle()
+    wlint.common.execute_tool(punctuationStyle, args)
+
+
+_PUNCTUATION_STYLE_COMMAND = (
+    main,
+    "Check for punctuation errors")
+
+if __name__ == '__main__':
+    main()
