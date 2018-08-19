@@ -6,6 +6,7 @@ wlint
 wlint is a collection of scripts and tools that can be used to help with
 writing.  The project is designed for a Unix-like environment.
 
+
 Dependencies
 ------------
 wlint is designed for a Unix-like environment.  Any modern Linux distribution
@@ -16,11 +17,24 @@ scripts are written in either :code:`/bin/sh` (assumes a typical collection of
 standard command line tools) and Python 3 (assumed to be
 :code:`/usr/bin/python3`).
 
+
 Installing
 ----------
-:code:`sh install.sh` Installs to the default prefix [:code:`/usr/local`]
+wlint installs using a :code:`setup.py` file.  The simplest installation
+method just uses pip_.
 
-:code:`sh install.sh --prefix=/path/to/prefix` Installs to a custom prefix
+.. code:: bash
+
+    $ pip3 /path/to/wlint
+
+If you don't have :code:`pip3` installed, it should be available in any
+distribution's package manager.  If you can't or don't want to install
+:code:`pip3`, you can also use :code:`python3` directly.
+
+.. code:: bash
+
+    $ python3 /path/to/wlint/setup.py install
+
 
 Usage
 -----
@@ -31,7 +45,7 @@ tools.  To get a list of tools, use the :code:`--list` option.
 Documentation for the other tools is available with the :code:`-h` or
 :code:`--help` options, e.g.:
 
-.. code::
+::
 
    wlint list-filter -h
    usage: list-filter [-h] [--file FILE] [--lists LISTS] [--list LIST]
@@ -46,3 +60,5 @@ Documentation for the other tools is available with the :code:`-h` or
 .. |code-climate| image::
     https://api.codeclimate.com/v1/badges/f2d5ee1555ff7ae6a0ff/maintainability
     :target: https://codeclimate.com/github/snewell/wlint/maintainability
+
+.. _pip: https://pypi.python.org/pypi/pip

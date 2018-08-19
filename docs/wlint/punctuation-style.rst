@@ -18,7 +18,12 @@ check for common punctutaion issues
 
 Synopsis
 --------
-:code:`punctuation-style [options] [file [file ...]]`
+::
+
+    wlint punctuation-style [-h] [--input-type INPUT_TYPE]
+                            [--list-input-types] [--enable ENABLE]
+                            [--disable DISABLE]
+                            [file [file ...]]
 
 
 Description
@@ -40,8 +45,8 @@ Options
 -------
   -h, --help            show this help message and exit
   --input-type INPUT_TYPE
-                        Type of input file. Options are text (plain text) and
-                        tex (a (La)TeX document). (default: text)
+                        Type of input file. (default: text)
+  --list-input-types    List supported input types.
   --enable ENABLE       Rules to use when processing text. An asterisk (\*) can
                         be used for wildcard matching. (default: \*)
   --disable DISABLE     Rules to disable when processing text. If a rule is

@@ -18,7 +18,12 @@ count the frequency of words
 
 Synopsis
 --------
-:code:`count-words [options] [file [file ...]]`
+::
+
+    wlint count-words [-h] [--input-type INPUT_TYPE] [--list-input-types]
+                      [--case-sensitive] [--summarize] [--ignore IGNORE]
+                      [--sort SORT] [--list-sorts]
+                      [file [file ...]]
 
 
 Description
@@ -50,20 +55,21 @@ Options
 -------
   -h, --help            show this help message and exit
   --input-type INPUT_TYPE
-                        Type of input file. Options are text (plain text) and
-                        tex (a (La)TeX document). (default: text)
+                        Type of input file. (default: text)
+  --list-input-types    List supported input types.
   --case-sensitive      Treat words differently if they use a different case.
                         (default: False)
   --summarize           Only print summarized results. (default: False)
   --ignore IGNORE       A comma-separated list of words to skip while
                         processing input. (default: None)
-  --sort SORT           Method to sort output. Options are: ['alpha', 'count']
+  --sort SORT           Method to sort output. Options are: alpha, count
                         (default: alpha)
+  --list-sorts          List supported sort methods.
 
 
 Sort Methods
 ------------
 alpha
-    Words are sorted alphabetically.
+    Print words in alphabetical order.
 count
-    Words are sorted based on their number of occurances.
+    Print words based on number of occurances.

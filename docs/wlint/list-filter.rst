@@ -18,7 +18,12 @@ detect words that weaken writing
 
 Synopsis
 --------
-:code:`list-filter [options] [file [file ...]]`
+::
+
+    wlint list-filter [-h] [--input-type INPUT_TYPE] [--list-input-types]
+                      [--lists LISTS] [--list LIST] [--sort SORT]
+                      [--list-sorts]
+                      [file [file ...]]
 
 
 Description
@@ -46,15 +51,16 @@ Options
 -------
   -h, --help            show this help message and exit
   --input-type INPUT_TYPE
-                        Type of input file. Options are text (plain text) and
-                        tex (a (La)TeX document). (default: text)
+                        Type of input file. (default: text)
+  --list-input-types    List supported input types.
   --lists LISTS         Change the set of word lists. This should be a comma-
                         separated list of built-in lists. (default:
                         filter,thought,weasel)
   --list LIST           Use a custom word list. The list should be a plain
                         text file with one word per line. (default: None)
-  --sort SORT           Method to sort output. Options are: ['alpha',
-                        'sequential'] (default: alpha)
+  --sort SORT           Method to sort output. Options are: alpha, sequential
+                        (default: alpha)
+  --list-sorts          List supported sort methods.
 
 
 Word Lists
@@ -75,8 +81,10 @@ match a string of characters with a single-quote, not an apostrophe.
 Sort Methods
 ------------
 alpha
-    Detected words will be presented alphabetically, grouped by word.  This is
-    useful if trying to deal with all instances of a given word (e.g., you're
-    trying to reduce a word or phrase you use as a crutch).
+    Sort output based on the actual words.  This is useful if trying to deal
+    with all instances of a given word (e.g., you're trying to reduce a word or
+    phrase you use as a crutch).
 sequential
-    Detected words be presented in the order they appear in the input.
+    Sort output based on the order words appear.  This is useful when you're
+    working on general editing, since you can start at the top of the output
+    and work your way down both the output and your document at the same time.
