@@ -23,7 +23,8 @@ _SORT_FNS = {
 class ListFilter(wlint.tool.Tool):
 
     def __init__(self):
-        super().__init__(description="Detect troublesome words")
+        super().__init__(description="Detect troublesome words",
+                         prog="wlint list-filter")
         defaultListsStr = ",".join(defaultLists.files)
         self.add_argument(
             "--lists",

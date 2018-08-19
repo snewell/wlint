@@ -36,7 +36,8 @@ def _remove_disabled_rules(disabled_rules, checks):
 class PunctuationStyle(wlint.tool.Tool):
 
     def __init__(self):
-        super().__init__(description="Check for common punctuation issues")
+        super().__init__(description="Check for common punctuation issues",
+                         prog="wlint punctuation-style")
         self.add_argument(
             "--enable",
             help="Rules to use when processing text.  An asterisk (*) can be "

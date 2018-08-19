@@ -59,7 +59,8 @@ _SORTS = [
 class WordCounter(wlint.tool.Tool):
 
     def __init__(self):
-        super().__init__(description="Count the occurrence of each word")
+        super().__init__(description="Count the occurrence of each word",
+                         prog="wlint count-words")
         # Is there a way to have \w not match numbers?
         # We're going to a call a word anything with these properties:
         #  - surrounded by word boundaries (\b)
