@@ -22,6 +22,11 @@ setup(
             "count-words = wlint.count_words:_COUNT_WORDS_COMMAND",
             "punctuation-style = wlint.punctuation_style:_PUNCTUATION_STYLE_COMMAND",
             "list-filter = wlint.list_filter:_LIST_FILTER_COMMAND",
+        ],
+
+        "wlint.puririfiers": [
+            "text = wlint.purify:_TEXT_PURIFIER",
+            "tex = wlint.purify:_TEX_PURIFIER"
         ]
     },
 

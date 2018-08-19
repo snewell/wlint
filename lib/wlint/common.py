@@ -4,7 +4,15 @@ import argparse
 import errno
 import sys
 
+import wlint.plugin
 import wlint.purify
+
+_INPUT_PURIFIERS = wlint.plugin.query_plugins('wlint.puririfiers')
+
+
+def _print_input_types():
+    for input_type in sorted(_INPUT_PURIFIERS):
+        print("{} - {}".format(input_type, _INPUT_PURIFIERS[input_type][1]))
 
 
 class Tool:
@@ -20,9 +28,13 @@ class Tool:
                                  metavar="file")
         self.add_argument(
             "--input-type",
-            help="Type of input file.  Options are text (plain text) and tex "
-            "(a (La)TeX document).",
+            help="Type of input file.",
             default="text")
+        self.add_argument(
+            "--list-input-types",
+            action='store_true',
+            help="List supported input types.",
+            default=argparse.SUPPRESS)
 
         self.sort_methods = None
 
@@ -40,13 +52,14 @@ class Tool:
     def execute(self, *args, **kwargs):
         parsed_args = self.parser.parse_args(*args, **kwargs)
 
-        if parsed_args.input_type == "text":
-            self.purifier = wlint.purify.text
-        elif parsed_args.input_type == "tex":
-            self.purifier = wlint.purify.tex
-        else:
+        if "list_input_types" in parsed_args:
+            self.missingFiles = None
+            return _print_input_types()
+
+        self.purifier = _INPUT_PURIFIERS.get(parsed_args.input_type)[0]
+        if not self.purifier:
             raise ValueError(
-                "'{}' is not a valid input type".format(parsed_args.input_type))
+                "'{}' is not a supported input type".format(parsed_args.input_type))
 
         if self.sort_methods:
             if parsed_args.sort in self.sort_methods:

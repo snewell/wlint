@@ -7,6 +7,9 @@ def text(s):
     return s
 
 
+_TEXT_PURIFIER = (text, "Plain text")
+
+
 def tex(s):
     def strip_comment(text):
         index = text.find("%")
@@ -24,3 +27,6 @@ def tex(s):
         return re.sub(pattern, replace_fn, text)
 
     return strip_commands(strip_comment(s))
+
+
+_TEX_PURIFIER = (tex, "(La)TeX input")
