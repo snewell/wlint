@@ -2,11 +2,11 @@
 
 import re
 
-import wlint.common
+import wlint.tool
 import wlint.punctuation
 
 
-class PunctuationStyle(wlint.common.Tool):
+class PunctuationStyle(wlint.tool.Tool):
 
     def __init__(self):
         super().__init__(description="Check for common punctuation issues")

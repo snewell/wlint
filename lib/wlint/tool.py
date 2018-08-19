@@ -49,76 +49,50 @@ class Tool:
             default=sort_methods[0])
         self.sort_methods = sort_methods
 
-    def execute(self, *args, **kwargs):
-        parsed_args = self.parser.parse_args(*args, **kwargs)
-
-        if "list_input_types" in parsed_args:
-            self.missingFiles = None
-            return _print_input_types()
-
-        self.purifier = _INPUT_PURIFIERS.get(parsed_args.input_type)[0]
-        if not self.purifier:
-            raise ValueError(
-                "'{}' is not a supported input type".format(parsed_args.input_type))
-
-        if self.sort_methods:
-            if parsed_args.sort in self.sort_methods:
-                self.sort = parsed_args.sort
-            else:
-                raise ValueError(
-                    "'{}' is not a valid sort method".format(self.sort))
-
-        self.setup(parsed_args)
-
-        missingFiles = []
-
-        def parseFiles(files):
-            """Parse a list of files, searching for filtered words.
-
-            Arguments:
-            files -- a list of files to parse (each file should be a
-                        full path)"""
-
-            if files:
-                for f in files:
-                    try:
-                        with open(f, 'r') as readFile:
-                            self.process(readFile)
-                    except FileNotFoundError:
-                        missingFiles.append(f)
-
-        if parsed_args.files:
-            # parse normal files, plus anything that was passed in via the
-            # "--file" option
-            parseFiles(parsed_args.files)
-        else:
-            # no files provided, so default to stdin
-            self.process(sys.stdin)
-
-        missingFiles.sort()
-        self.missingFiles = missingFiles
-
-    def validate_arguments(self, arguments):
+    def execute(self, parsed_args):
         pass
 
-    def display_results(self):
-        pass
 
-    def purify(self, text):
-        return self.purifier(text)
+def get_purifier(args):
+    purifier = _INPUT_PURIFIERS.get(args.input_type)[0]
+    if not purifier:
+        raise ValueError(
+            "'{}' is not a supported input type".format(args.input_type))
+    return purifier
+
+
+def iterate_files(parsed_args, process_fn):
+    if parsed_args.files:
+        missing_files = []
+        for f in parsed_args.files:
+            try:
+                with open(f, 'r') as read_file:
+                    process_fn(read_file)
+            except FileNotFoundError:
+                missing_files.append(f)
+        return sorted(missing_files)
+    else:
+        # no files provided, so default to stdin
+        process_fn(sys.stdin)
+        return []
+
+
+def _parse_args(parser, *args, **kwargs):
+    parsed_args = parser.parse_args(*args, **kwargs)
+    return parsed_args
 
 
 def execute_tool(tool, args):
     if args is None:
         args = sys.argv[1:]
     try:
-        tool.execute(args)
-        tool.display_results()
+        parsed_args = _parse_args(tool.parser, args)
+        missing_files = tool.execute(parsed_args)
 
-        if tool.missingFiles:
+        if missing_files:
             print(
                 "Error opening files: {}".format(
-                    tool.missingFiles),
+                    missing_files),
                 file=sys.stderr)
             exit(1)
 

@@ -2,17 +2,53 @@
 
 import operator
 
-import wlint.common
+import wlint.tool
 import wlint.wordcounter
 
 
-def print_counts(counts, total_words):
+def _make_case_fn(parsed_args):
+    def _case_sensitive(word):
+        return word
+
+    def _case_insensitive(word):
+        return word.lower()
+
+    if parsed_args.case_sensitive:
+        return _case_sensitive
+    return _case_insensitive
+
+
+def _make_sort_fn(parsed_args):
+    def _alpha_sort(items):
+        return sorted(list(items))
+
+    def _count_sort(items):
+        item_list = list(items)
+        item_list.sort(key=operator.itemgetter(0))
+        item_list.sort(key=operator.itemgetter(1), reverse=True)
+        return item_list
+
+    if parsed_args.sort == "count":
+        return _count_sort
+    return _alpha_sort
+
+
+def _make_ignored_words(parsed_args):
+    ignored_words = {}
+    if parsed_args.ignore:
+        ignore_list = parsed_args.ignore.split(",")
+        for word in ignore_list:
+            ignored_words[word] = None
+    return ignored_words
+
+
+def _print_counts(counts, total_words):
     for word, count in counts:
         ratio = count / total_words
         print("{}\t{}\t{:.5f}".format(word, count, ratio))
 
 
-class WordCounter(wlint.common.Tool):
+class WordCounter(wlint.tool.Tool):
 
     def __init__(self):
         super().__init__(description="Count the occurrence of each word")
@@ -39,72 +75,55 @@ class WordCounter(wlint.common.Tool):
 
         self.add_sort(["alpha", "count"])
 
-    def setup(self, arguments):
-        self.counts = {}
-        self.file_count = 0
-        self.total_words = 0
+    def execute(self, processed_args):
+        counts = {}
+        file_count = 0
+        total_words = 0
 
-        def case_sensitive(word):
-            return word
+        key_maker = _make_case_fn(processed_args)
+        sort_count = _make_sort_fn(processed_args)
+        summarize_only = processed_args.summarize
+        ignored_words = _make_ignored_words(processed_args)
+        purifier = wlint.tool.get_purifier(processed_args)
 
-        def case_insensitive(word):
-            return word.lower()
+        total_files = 0
+        total_counts = {}
 
-        if arguments.case_sensitive:
-            self.key_builder = case_sensitive
-        else:
-            self.key_builder = case_insensitive
+        def _count_words(file_handle):
+            nonlocal total_words
+            nonlocal total_files
 
-        self.summarize_only = arguments.summarize
-        self.sort_count = self.sort == "count"
+            file_counts = wlint.wordcounter.count_handle(
+                file_handle, lambda t: key_maker(purifier(t)))
 
-        self.ignore = {}
-        if arguments.ignore:
-            ignore = arguments.ignore.split(",")
-            for word in ignore:
-                self.ignore[word] = None
+            for word, count in file_counts[0].items():
+                if word in ignored_words:
+                    file_counts[1] -= count
+                    del file_counts[0][word]
+                else:
+                    current_count = total_counts.get(word, 0)
+                    total_counts[word] = current_count + count
 
-    def _count_words(self, file_handle):
-        file_counts = wlint.wordcounter.count_handle(
-            file_handle, lambda t: self.key_builder(self.purify(t)))
-
-        for word in self.ignore:
-            if word in file_counts[0]:
-                file_counts[1] -= file_counts[0][word]
-                del file_counts[0][word]
-
-        return file_counts
-
-    def process(self, fileHandle):
-        current_file_counts = self._count_words(fileHandle)
-
-        self.total_words += current_file_counts[1]
-        if current_file_counts[0]:
-            if not self.summarize_only:
-                print("{}: {}".format(fileHandle.name, current_file_counts[1]))
-                print_counts(self.get_counts(current_file_counts[0]),
-                             current_file_counts[1])
+            if not summarize_only:
+                print("{}: {}".format(file_handle.name, file_counts[1]))
+                _print_counts(sort_count(file_counts[0].items()),
+                              file_counts[1])
                 print("")
-            self.file_count += 1
 
-    def get_counts(self, counts):
-        list_items = list(counts.items())
-        if self.sort_count:
-            list_items.sort(key=operator.itemgetter(0))
-            list_items.sort(key=operator.itemgetter(1), reverse=True)
-        else:
-            list_items.sort()
-        return list_items
+            total_words += file_counts[1]
+            total_files += 1
 
-    def display_results(self):
-        if self.file_count > 1:
-            print("Total: {}".format(self.total_words))
-            print_counts(self.get_counts(self.counts), self.total_words)
+        missing_files = wlint.tool.iterate_files(processed_args, _count_words)
+        if file_count > 1 or summarize_only:
+            print("Total: {}".format(total_words))
+            _print_counts(sort_count(total_counts.keys()), total_counts)
+
+        return missing_files
 
 
 def main(args=None):
     wordCounter = WordCounter()
-    wlint.common.execute_tool(wordCounter, args)
+    wlint.tool.execute_tool(wordCounter, args)
 
 
 _COUNT_WORDS_COMMAND = (

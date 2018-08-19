@@ -6,7 +6,7 @@ import sys
 
 import pkg_resources
 
-import wlint.common
+import wlint.tool
 import wlint.filter
 
 listDir = pkg_resources.resource_filename(__name__, "share/filter-lists/")
@@ -14,7 +14,7 @@ listDir = pkg_resources.resource_filename(__name__, "share/filter-lists/")
 defaultLists = wlint.filter.DirectoryLists(listDir)
 
 
-class ListFilter(wlint.common.Tool):
+class ListFilter(wlint.tool.Tool):
 
     def __init__(self):
         super().__init__(description="Detect troublesome words")
