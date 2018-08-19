@@ -6,6 +6,33 @@ import wlint.tool
 import wlint.punctuation
 
 
+def _get_enabled_rules(enabled_rules):
+    ret = {}
+    rules = enabled_rules.split(",")
+    all_rules = wlint.punctuation.get_all_rules()
+    for rule in rules:
+        pattern = re.compile(rule.replace(".", "\.").replace("*", ".*"))
+        for (message, fn) in all_rules:
+            if pattern.match(message):
+                ret[message] = fn
+    return ret
+
+
+def _remove_disabled_rules(disabled_rules, checks):
+    for rule in disabled_rules:
+        if rule:  # don't deal with empty strings
+            pattern = re.compile(rule.replace(
+                ".", "\.").replace("*", ".*"))
+            rms = []
+            for message in checks:
+                if pattern.match(message):
+                    rms.append(message)
+            for message in rms:
+                del checks[message]
+
+    return checks
+
+
 class PunctuationStyle(wlint.tool.Tool):
 
     def __init__(self):
@@ -20,57 +47,35 @@ class PunctuationStyle(wlint.tool.Tool):
             help="Rules to disable when processing text.  If a rule is both "
                  "enabled and disabled, disable takes precedence.")
 
-    def _get_enabled_rules(enabled_rules):
-        ret = {}
-        rules = enabled_rules.split(",")
-        all_rules = wlint.punctuation.get_all_rules()
-        for rule in rules:
-            pattern = re.compile(rule.replace(".", "\.").replace("*", ".*"))
-            for (message, fn) in all_rules:
-                if pattern.match(message):
-                    ret[message] = fn
-        return ret
+    def execute(self, processed_args):
+        result = 0
+        rules = _get_enabled_rules(processed_args.enable)
+        if processed_args.disable:
+            disable = processed_args.disable.split(",")
+            rules = _remove_disabled_rules(disable, rules)
 
-    def _remove_disabled_rules(disabled_rules, checks):
-        for rule in disabled_rules:
-            if rule:  # don't deal with empty strings
-                pattern = re.compile(rule.replace(
-                    ".", "\.").replace("*", ".*"))
-                rms = []
-                for message in checks:
-                    if pattern.match(message):
-                        rms.append(message)
-                for message in rms:
-                    del checks[message]
+        checks = []
+        for (message, fn) in rules.items():
+            checks.append((message, fn))
 
-        return checks
+        purifier = wlint.tool.get_purifier(processed_args)
 
-    def setup(self, arguments):
-        self.result = 0
-        checks = PunctuationStyle._get_enabled_rules(arguments.enable)
-        if arguments.disable:
-            disable = arguments.disable.split(",")
-            checks = PunctuationStyle._remove_disabled_rules(disable, checks)
+        def _process(file_handle):
+            hits = []
+            wlint.punctuation.check_handle(checks, file_handle,
+                                           lambda line_number, message, pos:
+                                               hits.append((line_number, pos,
+                                                            message)), purifier)
+            hits.sort()
+            for (line, col, message) in hits:
+                print("{}-{}:{} {}".format(file_handle.name, line, col, message))
 
-        self.checks = []
-        for (message, fn) in checks.items():
-            self.checks.append((message, fn))
-
-    def _process(self, file_handle):
-        hits = []
-        wlint.punctuation.check_handle(self.checks, file_handle,
-                                       lambda line_number, message, pos: hits.append((line_number, pos, message)), self.purify)
-        return hits
-
-    def process(self, fileHandle):
-        hits = sorted(self._process(fileHandle))
-        for (line, col, message) in hits:
-            print("{}-{}:{} {}".format(fileHandle.name, line, col, message))
+        return wlint.tool.iterate_files(processed_args, _process)
 
 
 def main(args=None):
     punctuationStyle = PunctuationStyle()
-    wlint.common.execute_tool(punctuationStyle, args)
+    wlint.tool.execute_tool(punctuationStyle, args)
 
 
 _PUNCTUATION_STYLE_COMMAND = (
