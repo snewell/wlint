@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+"""Punctuation rules around range operations (e.g., "5-17")."""
+
 import wlint.punctuation
 
 _EMDASH = "—"

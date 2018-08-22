@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+"""Punctuation rules around quotation marks."""
+
 import wlint.punctuation
 
 _LEFT_DOUBLE_QUOTE = "“"
@@ -31,28 +33,28 @@ def _double_punctuation_rule(name, quote):
 
 
 def _correct_space_rule(name, single, double):
-    def correct_space_builder(first, second):
+    def _correct_space_builder(first, second):
         predicate = wlint.punctuation.make_regex_rule(
             "{}\\s{}".format(first, second))
 
-        def execute(text, found_fn):
+        def _execute(text, found_fn):
             hit = False
 
-            def check_pos(pos):
+            def _check_pos(pos):
                 nonlocal hit
                 if text[pos + 1] != _THIN_SPACE_NONBREAK:
                     found_fn(pos)
                     hit = True
 
-            predicate(text, check_pos)
+            predicate(text, _check_pos)
             return hit
 
-        return execute
+        return _execute
 
     return [("quotation.incorrect-space-{}-single-double".format(name),
-             correct_space_builder(single, double)),
+             _correct_space_builder(single, double)),
             ("quotation.incorrect-space-{}-double-single".format(name),
-             correct_space_builder(double, single))]
+             _correct_space_builder(double, single))]
 
 
 def _get_quote_rules():

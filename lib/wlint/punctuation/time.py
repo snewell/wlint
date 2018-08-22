@@ -1,21 +1,23 @@
 #!/usr/bin/python3
 
+"""Punctuation rules around time formating."""
+
 import wlint.punctuation
 
 
 def _uppercase_ampm_builder(time_regex_with_space):
     rules = []
 
-    def builder(first, second):
+    def _builder(first, second):
         ampm_regex_uppercase = "(?:[{}]\\.?{}\\.?)".format(first,
                                                            second)
         rules.append(("time.uppercase-{}{}".format(first, second),
-                      wlint.punctuation.make_pair_regex_rule(time_regex_with_space,
-                                                             ampm_regex_uppercase)))
+                      wlint.punctuation.make_pair_regex_rule(
+                          time_regex_with_space, ampm_regex_uppercase)))
 
-    builder("AP", "m")
-    builder("AP", "M")
-    builder("ap", "M")
+    _builder("AP", "m")
+    _builder("AP", "M")
+    _builder("ap", "M")
 
     return rules
 
@@ -28,10 +30,11 @@ def _get_time_rules():
 
     rules = []
     rules.append(("time.missing-periods",
-                  wlint.punctuation.make_pair_regex_rule(time_regex_with_space,
-                                                         ampm_regex_no_periods)))
+                  wlint.punctuation.make_pair_regex_rule(
+                      time_regex_with_space, ampm_regex_no_periods)))
     rules.append(("time.missing-space",
-                  wlint.punctuation.make_pair_regex_rule(time_regex, ampm_regex)))
+                  wlint.punctuation.make_pair_regex_rule(
+                      time_regex, ampm_regex)))
     rules += _uppercase_ampm_builder(time_regex_with_space)
 
     return rules

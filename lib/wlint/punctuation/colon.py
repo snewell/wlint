@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+"""Punctuation rules around colons and semi-colons."""
+
 import wlint.punctuation
 
 
@@ -8,10 +10,12 @@ def _colon_rule(name, colon):
     # a colon might be followed by a digit if it's time
     if name == "colon":
         rules.append(("{}.missing-space".format(name),
-                      wlint.punctuation.make_pair_regex_rule(colon, "[^\\s\\d]")))
+                      wlint.punctuation.make_pair_regex_rule(colon,
+                                                             "[^\\s\\d]")))
     elif name == "semicolon":
         rules.append(("{}.missing-space".format(name),
-                      wlint.punctuation.make_pair_regex_rule(colon, "\\S")))
+                      wlint.punctuation.make_pair_regex_rule(colon,
+                                                             "\\S")))
 
     rules.append(("{}.preceeding-space".format(name),
                   wlint.punctuation.make_pair_regex_rule("\\s", colon)))

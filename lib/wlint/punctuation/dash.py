@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+"""Punctuation rules around dashes."""
+
 import wlint.punctuation
 
 _EMDASH = "—"
