@@ -3,6 +3,7 @@
 import re
 
 import wlint.plugin
+import wlint.purify
 import wlint.tool
 
 
@@ -62,13 +63,12 @@ def _check_rules(rules, text, hit_fn):
             backup_message, pos))
 
 
-def _check_handle(rules, handle, hit_fn, purifier):
+def _check_sequence(rules, iterable, hit_fn):
     line_number = 0
-    for text in handle:
+    for text in iterable:
         line_number += 1
         _check_rules(
-            rules,
-            purifier(text),
+            rules, text,
             lambda message, pos: hit_fn(line_number, message, pos))
 
 
@@ -101,9 +101,10 @@ class PunctuationStyle(wlint.tool.Tool):
 
         def _process(file_handle):
             hits = []
-            _check_handle(checks, file_handle,
-                          lambda line_number, message, pos: hits.append(
-                              (line_number, pos, message)), purifier)
+            _check_sequence(checks, wlint.purify.PurifyingIterator(file_handle,
+                                                                   purifier),
+                            lambda line_number, message, pos: hits.append(
+                                (line_number, pos, message)))
             hits.sort()
             for (line, col, message) in hits:
                 print("{}-{}:{} {}".format(file_handle.name, line,
