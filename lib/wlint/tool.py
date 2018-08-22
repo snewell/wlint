@@ -69,17 +69,16 @@ def get_purifier(args):
 def iterate_files(parsed_args, process_fn):
     if parsed_args.files:
         missing_files = []
-        for f in parsed_args.files:
+        for filename in parsed_args.files:
             try:
-                with open(f, 'r') as read_file:
+                with open(filename, 'r') as read_file:
                     process_fn(read_file)
             except FileNotFoundError:
-                missing_files.append(f)
+                missing_files.append(filename)
         return sorted(missing_files)
-    else:
-        # no files provided, so default to stdin
-        process_fn(sys.stdin)
-        return []
+    # no files provided, so default to stdin
+    process_fn(sys.stdin)
+    return []
 
 
 def _check_special_options(tool, parsed_args):
@@ -121,13 +120,13 @@ def execute_tool(tool, args):
                     file=sys.stderr)
                 exit(1)
 
-    except IOError as e:
-        if e.errno == errno.EPIPE:
+    except IOError as error:
+        if error.errno == errno.EPIPE:
             # This probably means we were piped into something that terminated
             # (e.g., head).  Might be a better way to handle this, but for now
             # silently swallowing the error isn't terrible.
             pass
 
-    except Exception as e:
-        print("Error: {}".format(str(e)), file=sys.stderr)
+    except Exception as error:  # pylint: disable=broad-except
+        print("Error: {}".format(str(error)), file=sys.stderr)
         exit(1)

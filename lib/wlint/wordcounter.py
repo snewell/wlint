@@ -4,15 +4,15 @@ import re
 
 import wlint.purify
 
-_right_single_quote = "’"
-_pattern = re.compile(r"\b([\w\-\'{}]+)\b".format(_right_single_quote))
+_RIGHT_SINGLE_QUOTE = "’"
+_PATTERN = re.compile(r"\b([\w\-\'{}]+)\b".format(_RIGHT_SINGLE_QUOTE))
 
 
 def count_line(text):
     counts = {}
 
     local_count = 0
-    match = _pattern.search(text)
+    match = _PATTERN.search(text)
     while match:
         word = match.group(1)
         if word in counts:
@@ -20,7 +20,7 @@ def count_line(text):
         else:
             counts[word] = 1
         local_count += 1
-        match = _pattern.search(text, match.end())
+        match = _PATTERN.search(text, match.end())
 
     return (counts, local_count)
 

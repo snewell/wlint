@@ -6,8 +6,9 @@ import pkg_resources
 import wlint.tool
 import wlint.filter
 
-listDir = pkg_resources.resource_filename(__name__, "share/filter-lists/")
-defaultLists = wlint.filter.DirectoryLists(listDir)
+_LIST_DIR = pkg_resources.resource_filename(__name__, "share/filter-lists/")
+_DEFAULT_LISTS = wlint.filter.DirectoryLists(_LIST_DIR)
+_DEFAULT_LISTS_STR = ",".join(_DEFAULT_LISTS.files)
 
 _SORTS = [
     ("alpha", "Sort output based on the actual words."),
@@ -25,12 +26,11 @@ class ListFilter(wlint.tool.Tool):
     def __init__(self):
         super().__init__(description="Detect troublesome words",
                          prog="wlint list-filter")
-        defaultListsStr = ",".join(defaultLists.files)
         self.add_argument(
             "--lists",
             help="Change the set of word lists.  This should be a "
                  "comma-separated list of built-in lists.",
-            default=defaultListsStr)
+            default=_DEFAULT_LISTS_STR)
         self.add_argument(
             "--list",
             help="Use a custom word list.  The list should be a plain text "
@@ -44,25 +44,24 @@ class ListFilter(wlint.tool.Tool):
             if parsed_args.lists:
                 lists = parsed_args.lists.split(",")
                 # Read the built in lists
-                return defaultLists.buildWordList(lists)
-            else:
-                return wlint.filter.WordList()
+                return _DEFAULT_LISTS.build_word_list(lists)
+            return wlint.filter.WordList()
 
         words = _make_lists()
         # Read any extra lists
         if parsed_args.list:
-            for wordList in parsed_args.list:
-                words.addWords(wordList)
+            for word_list in parsed_args.list:
+                words.addWords(word_list)
 
         # WordList is complete, so setup variables
         filter_list = wlint.filter.Filter(words)
         sorter = _SORT_FNS[parsed_args.sort]
         purifier = wlint.tool.get_purifier(parsed_args)
 
-        def _print_hits(hits, fn):
+        def _print_hits(hits, found_fn):
             sorter(hits)
             for (word, line, col) in hits:
-                fn(word, line, col)
+                found_fn(word, line, col)
 
         def _process(file_handle):
             hits = []
@@ -78,8 +77,8 @@ class ListFilter(wlint.tool.Tool):
 
 
 def main(args=None):
-    listFilter = ListFilter()
-    wlint.tool.execute_tool(listFilter, args)
+    list_filter = ListFilter()
+    wlint.tool.execute_tool(list_filter, args)
 
 
 _LIST_FILTER_COMMAND = (

@@ -66,9 +66,9 @@ class TestCountLine(unittest.TestCase):
     def test_single_apostrophe(self):
         counts = wlint.wordcounter.count_line(
             "that{}s cool".format(
-                wlint.wordcounter._right_single_quote))
+                wlint.wordcounter._RIGHT_SINGLE_QUOTE))
         expected = ({
-            "that{}s".format(wlint.wordcounter._right_single_quote): 1,
+            "that{}s".format(wlint.wordcounter._RIGHT_SINGLE_QUOTE): 1,
             "cool": 1
         }, 2)
         _verify_counts(counts, expected, self)

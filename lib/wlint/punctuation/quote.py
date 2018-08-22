@@ -35,15 +35,13 @@ def _correct_space_rule(name, single, double):
         predicate = wlint.punctuation.make_regex_rule(
             "{}\\s{}".format(first, second))
 
-        def execute(text, fn):
+        def execute(text, found_fn):
             hit = False
 
             def check_pos(pos):
                 nonlocal hit
-                if text[
-                        pos +
-                        1] != _THIN_SPACE_NONBREAK:
-                    fn(pos)
+                if text[pos + 1] != _THIN_SPACE_NONBREAK:
+                    found_fn(pos)
                     hit = True
 
             predicate(text, check_pos)

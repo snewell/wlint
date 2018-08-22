@@ -50,12 +50,12 @@ class DirectoryLists:
         pattern = re.compile("^([a-z]+)-words.txt$")
         self.files = []
         for file in files:
-            m = pattern.search(file)
-            if m:
-                self.files.append(m.group(1))
+            match = pattern.search(file)
+            if match:
+                self.files.append(match.group(1))
         self.files.sort()
 
-    def buildWordList(self, word_lists):
+    def build_word_list(self, word_lists):
         """Parse built-in word lists for filtering.
 
         Arguments:
@@ -84,26 +84,28 @@ class Filter:
         words -- the WordList to use"""
         self.words = words
 
-    def filter_line(self, line, fn):
-        """Search one line of text for any filter words.
+    def filter_line(self, line, found_fn):
+        """
+        Search one line of text for any filter words.
 
         Arguments:
         line -- the line of text to parse
-        fn -- The function to call when a filter word is found.  Arguments are
-              word, lineNumber."""
+        found_fn -- The function to call when a filter word is found.
+                    Arguments are word, lineNumber.
+        """
         for word, pattern in self.words.words.items():
             match = pattern.search(line)
             while match:
-                fn(word, match.start())
+                found_fn(word, match.start())
                 match = pattern.search(line, match.end())
 
-    def filter_sequence(self, sequence, fn, purifier=None):
+    def filter_sequence(self, sequence, found_fn, purifier=None):
         """Parse a sequence.
 
         Arguments:
         sequence -- an iterable object to filter over
-        fn -- A function to invoke on each match.  Arguments are: word,
-              lineNumber, column.
+        found_fn -- A function to invoke on each match.  Arguments are: word,
+                    lineNumber, column.
         purifier -- A function to purify each line of text.  If not provided,
                     the text will not be modified."""
         if not purifier:
@@ -112,5 +114,5 @@ class Filter:
         line = 0
         for text in sequence:
             line += 1
-            self.filter_line(purifier(text), lambda word,
-                             col: fn(word, line, col))
+            self.filter_line(purifier(text),
+                             lambda word, col: found_fn(word, line, col))

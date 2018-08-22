@@ -101,24 +101,24 @@ class WordCounter(wlint.tool.Tool):
             nonlocal total_words
             nonlocal total_files
 
-            file_counts = wlint.wordcounter.count_handle(
+            file_words, word_count = wlint.wordcounter.count_handle(
                 file_handle, lambda t: key_maker(purifier(t)))
 
-            for word, count in file_counts[0].items():
+            for word, count in file_words.items():
                 if word in ignored_words:
-                    file_counts[1] -= count
-                    del file_counts[0][word]
+                    word_count -= count
+                    del file_words[word]
                 else:
                     current_count = total_counts.get(word, 0)
                     total_counts[word] = current_count + count
 
             if not summarize_only:
-                print("{}: {}".format(file_handle.name, file_counts[1]))
-                _print_counts(sort_count(file_counts[0].items()),
-                              file_counts[1])
+                print("{}: {}".format(file_handle.name, word_count))
+                _print_counts(sort_count(file_words.items()),
+                              word_count)
                 print("")
 
-            total_words += file_counts[1]
+            total_words += word_count
             total_files += 1
 
         missing_files = wlint.tool.iterate_files(parsed_args, _count_words)
@@ -130,8 +130,8 @@ class WordCounter(wlint.tool.Tool):
 
 
 def main(args=None):
-    wordCounter = WordCounter()
-    wlint.tool.execute_tool(wordCounter, args)
+    word_counter = WordCounter()
+    wlint.tool.execute_tool(word_counter, args)
 
 
 _COUNT_WORDS_COMMAND = (

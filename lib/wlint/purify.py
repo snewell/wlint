@@ -3,30 +3,29 @@
 import re
 
 
-def text(s):
-    return s
+def text(s_data):
+    return s_data
 
 
 _TEXT_PURIFIER = (text, "Plain text")
 
 
-def tex(s):
-    def strip_comment(text):
-        index = text.find("%")
+def tex(s_data):
+    def strip_comment(text_data):
+        index = text_data.find("%")
         if index == -1:
-            return text
-        else:
-            return text[:index]
+            return text_data
+        return text_data[:index]
 
     pattern = re.compile(r"(\\\w+)")
 
-    def strip_commands(text):
-        def replace_fn(m):
-            return " " * len(m.group(0))
+    def strip_commands(text_data):
+        def replace_fn(match):
+            return " " * len(match.group(0))
 
-        return re.sub(pattern, replace_fn, text)
+        return re.sub(pattern, replace_fn, text_data)
 
-    return strip_commands(strip_comment(s))
+    return strip_commands(strip_comment(s_data))
 
 
 _TEX_PURIFIER = (tex, "(La)TeX input")

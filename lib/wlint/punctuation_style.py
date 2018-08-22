@@ -10,10 +10,10 @@ def _get_enabled_rules(enabled_rules):
     ret = {}
     rules = enabled_rules.split(",")
     for rule in rules:
-        pattern = re.compile(rule.replace(".", "\.").replace("*", ".*"))
-        for (message, fn) in _AVAILABLE_RULES:
+        pattern = re.compile(rule.replace(".", R"\.").replace("*", ".*"))
+        for (message, check_fn) in _AVAILABLE_RULES:
             if pattern.match(message):
-                ret[message] = fn
+                ret[message] = check_fn
     return ret
 
 
@@ -21,7 +21,7 @@ def _remove_disabled_rules(disabled_rules, checks):
     for rule in disabled_rules:
         if rule:  # don't deal with empty strings
             pattern = re.compile(rule.replace(
-                ".", "\.").replace("*", ".*"))
+                ".", R"\.").replace("*", ".*"))
             rms = []
             for message in checks:
                 if pattern.match(message):
@@ -45,8 +45,9 @@ _AVAILABLE_RULES = _build_available_rules()
 
 
 def _check_rules(rules, text, hit_fn):
-    for (message, fn) in rules:
-        fn(text, lambda pos: hit_fn(message, pos))
+    for (message, check_fn) in rules:
+        check_fn(text, lambda pos, backup_message=message: hit_fn(
+            backup_message, pos))
 
 
 def _check_handle(rules, handle, hit_fn, purifier):
@@ -56,11 +57,7 @@ def _check_handle(rules, handle, hit_fn, purifier):
         _check_rules(
             rules,
             purifier(text),
-            lambda message,
-            pos: hit_fn(
-                line_number,
-                message,
-                pos))
+            lambda message, pos: hit_fn(line_number, message, pos))
 
 
 class PunctuationStyle(wlint.tool.Tool):
@@ -85,25 +82,27 @@ class PunctuationStyle(wlint.tool.Tool):
             rules = _remove_disabled_rules(disable, rules)
 
         checks = []
-        for (message, fn) in rules.items():
-            checks.append((message, fn))
+        for (message, check_fn) in rules.items():
+            checks.append((message, check_fn))
 
         purifier = wlint.tool.get_purifier(parsed_args)
 
         def _process(file_handle):
             hits = []
             _check_handle(checks, file_handle,
-                          lambda line_number, message, pos: hits.append((line_number, pos, message)), purifier)
+                          lambda line_number, message, pos: hits.append(
+                              (line_number, pos, message)), purifier)
             hits.sort()
             for (line, col, message) in hits:
-                print("{}-{}:{} {}".format(file_handle.name, line, col, message))
+                print("{}-{}:{} {}".format(file_handle.name, line,
+                                           col, message))
 
         return wlint.tool.iterate_files(parsed_args, _process)
 
 
 def main(args=None):
-    punctuationStyle = PunctuationStyle()
-    wlint.tool.execute_tool(punctuationStyle, args)
+    punctuation_style = PunctuationStyle()
+    wlint.tool.execute_tool(punctuation_style, args)
 
 
 _PUNCTUATION_STYLE_COMMAND = (
