@@ -2,6 +2,7 @@
 
 import operator
 
+import wlint.purify
 import wlint.tool
 import wlint.wordcounter
 
@@ -101,8 +102,10 @@ class WordCounter(wlint.tool.Tool):
             nonlocal total_words
             nonlocal total_files
 
-            file_words, word_count = wlint.wordcounter.count_handle(
-                file_handle, lambda t: key_maker(purifier(t)))
+            file_words, word_count = wlint.wordcounter.count_lines(
+                wlint.purify.PurifyingIterator(file_handle,
+                                               lambda t: key_maker(
+                                                   purifier(t))))
 
             for word, count in file_words.items():
                 if word in ignored_words:
@@ -130,6 +133,7 @@ class WordCounter(wlint.tool.Tool):
 
 
 def main(args=None):
+    # pylint: disable=missing-docstring
     word_counter = WordCounter()
     wlint.tool.execute_tool(word_counter, args)
 

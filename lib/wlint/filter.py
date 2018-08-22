@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+"""Types and functions to work with filter words."""
+
 import os
 import re
 
@@ -99,20 +101,15 @@ class Filter:
                 found_fn(word, match.start())
                 match = pattern.search(line, match.end())
 
-    def filter_sequence(self, sequence, found_fn, purifier=None):
+    def filter_sequence(self, sequence, found_fn):
         """Parse a sequence.
 
         Arguments:
         sequence -- an iterable object to filter over
         found_fn -- A function to invoke on each match.  Arguments are: word,
                     lineNumber, column.
-        purifier -- A function to purify each line of text.  If not provided,
-                    the text will not be modified."""
-        if not purifier:
-            purifier = wlint.purify.text
-
+        """
         line = 0
         for text in sequence:
             line += 1
-            self.filter_line(purifier(text),
-                             lambda word, col: found_fn(word, line, col))
+            self.filter_line(text, lambda word, col: found_fn(word, line, col))

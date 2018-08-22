@@ -3,6 +3,7 @@
 import operator
 import pkg_resources
 
+import wlint.purify
 import wlint.tool
 import wlint.filter
 
@@ -66,8 +67,8 @@ class ListFilter(wlint.tool.Tool):
         def _process(file_handle):
             hits = []
             filter_list.filter_sequence(
-                file_handle, lambda word, line, col: hits.append(
-                    (word, line, col)), purifier)
+                wlint.purify.PurifyingIterator(file_handle, purifier),
+                lambda word, line, col: hits.append((word, line, col)))
             _print_hits(
                 hits, lambda word, line, col: print(
                     "{} {} ({}:{})".format(
@@ -77,6 +78,7 @@ class ListFilter(wlint.tool.Tool):
 
 
 def main(args=None):
+    # pylint: disable=missing-docstring
     list_filter = ListFilter()
     wlint.tool.execute_tool(list_filter, args)
 

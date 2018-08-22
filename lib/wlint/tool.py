@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+"""Functionality to help write and use wlint tools"""
+
 import argparse
 import errno
 import sys
@@ -17,15 +19,21 @@ def _print_input_types():
 
 class Tool:
 
+    """
+    A wlint tool.
+
+    This class isn't expected to be used directly, but instead be subclassed.
+    """
+
     def __init__(self, *args, **kwargs):
-        self.parser = argparse.ArgumentParser(
+        self._parser = argparse.ArgumentParser(
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
             *args, **kwargs)
 
         # add common arguments
-        self.parser.add_argument("files",
-                                 help="Files to process.", nargs="*",
-                                 metavar="file")
+        self._parser.add_argument("files",
+                                  help="Files to process.", nargs="*",
+                                  metavar="file")
         self.add_argument(
             "--input-type",
             help="Type of input file.",
@@ -39,9 +47,28 @@ class Tool:
         self.sort_methods = None
 
     def add_argument(self, *args, **kwargs):
-        self.parser.add_argument(*args, **kwargs)
+        """
+        Add a command-line argument.
+
+        Any arguments will be passed to the underlying command-line parser
+        object.
+        """
+        self._parser.add_argument(*args, **kwargs)
 
     def add_sort(self, sort_methods):
+        """
+        Support sort options via command-line arguments.
+
+        This just adds the relevant command-line options; it's the
+        responsibility of each Tool to perform its own sorting.
+
+        Arguments:
+        sort_methods -- A list of tuples representing valid sorts for the tool.
+                        Each item in the list should contain 1) a name (this
+                        will be valid options for the user to select) and 2) a
+                        short description of the sort.  The first item in the
+                        list wll be the defualt sort.
+        """
         self.add_argument(
             "--sort",
             help="Method to sort output.  Options are: {}".format(
@@ -55,18 +82,52 @@ class Tool:
         self.sort_methods = sort_methods
 
     def execute(self, parsed_args):
+        """
+        Execute the tool with parsed_args.
+
+        This is expected to be overriden by subclasses.  The default
+        implementation does nothing.
+
+        Arguments:
+        parsed_args -- Parsed command-line arguments.
+
+        Return:
+        Either a list of missing files or something that evaluates to False.
+        If a tool needs to generate missing files, the best option is to use
+        the iterate_files function (its return value is a missing files list).
+        """
         pass
 
 
-def get_purifier(args):
-    purifier = _INPUT_PURIFIERS.get(args.input_type)[0]
+def get_purifier(parsed_args):
+    """
+    Return a purifier function based on the command-line arguments.
+
+    Arguments:
+    parsed_args -- a set of parsed command-line arguments
+
+    Return:
+    A purification function.
+    """
+    purifier = _INPUT_PURIFIERS.get(parsed_args.input_type)[0]
     if not purifier:
         raise ValueError(
-            "'{}' is not a supported input type".format(args.input_type))
+            "'{}' is not a supported input type".format(parsed_args.input_type))
     return purifier
 
 
 def iterate_files(parsed_args, process_fn):
+    """
+    Iterate over all files listed in the command line and execute a function.
+
+    Arguments:
+    parsed_args -- a parsed set of command-line arguments
+    process_fn -- A function to execute for each file.  It will be passed the
+                  file handle as the only argument.
+
+    Return:
+    A list of missing files (i.e., they were specified but couldn't be opened).
+    """
     if parsed_args.files:
         missing_files = []
         for filename in parsed_args.files:
@@ -98,11 +159,26 @@ def _check_special_options(tool, parsed_args):
 
 
 def _parse_args(tool, *args, **kwargs):
-    parsed_args = tool.parser.parse_args(*args, **kwargs)
+    # pylint: disable=protected-access
+    parsed_args = tool._parser.parse_args(*args, **kwargs)
     return parsed_args
 
 
 def execute_tool(tool, args):
+    """
+    Execute a tool with given arguments.
+
+    Execution involves the following:
+      - parsing command-line arguments
+      - checking for special arguments
+      - calling the execute method on tool
+      - printing a list of missing files if any exist
+
+    Arguments:
+    tool -- The tool to execute.  This must be an instance of Tool or a Tool
+            subclass.
+    args -- The command-line arguments to tool.
+    """
     if args is None:
         args = sys.argv[1:]
     try:

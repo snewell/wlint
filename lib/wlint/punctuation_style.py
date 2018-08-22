@@ -113,6 +113,7 @@ class PunctuationStyle(wlint.tool.Tool):
 
 
 def main(args=None):
+    # pylint: disable=missing-docstring
     punctuation_style = PunctuationStyle()
     wlint.tool.execute_tool(punctuation_style, args)
 
