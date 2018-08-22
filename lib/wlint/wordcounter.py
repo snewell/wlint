@@ -25,20 +25,19 @@ def count_line(text):
     return (counts, local_count)
 
 
-def count_handle(handle, purifier=None):
-    if not purifier:
-        purifier = wlint.purify.text
+def _update_full_counts(full_counts, line_counts):
+    for word, count in line_counts[0].items():
+        new_count = full_counts.get(word, 0) + count
+        full_counts[word] = new_count
 
+
+def count_handle(handle, purifier):
     full_counts = {}
     total_word_count = 0
 
     for text in handle:
         counts = count_line(purifier(text))
-        for word, count in counts[0].items():
-            if word in full_counts:
-                full_counts[word] += count
-            else:
-                full_counts[word] = count
+        _update_full_counts(full_counts, counts)
         total_word_count += counts[1]
 
     return (full_counts, total_word_count)

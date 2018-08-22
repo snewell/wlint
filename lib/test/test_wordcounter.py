@@ -2,6 +2,7 @@
 
 import unittest
 
+import wlint.purify
 import wlint.wordcounter
 
 
@@ -85,12 +86,13 @@ class TestCountLine(unittest.TestCase):
 
 class TestCountSequence(unittest.TestCase):
     def test_empty(self):
-        counts = wlint.wordcounter.count_handle([])
+        counts = wlint.wordcounter.count_handle([], wlint.purify.text)
         expected = ({}, 0)
         _verify_counts(counts, expected, self)
 
     def test_simple(self):
-        counts = wlint.wordcounter.count_handle(["hello world"])
+        counts = wlint.wordcounter.count_handle(["hello world"],
+                                                wlint.purify.text)
         expected = ({
             "hello": 1,
             "world": 1
@@ -99,7 +101,8 @@ class TestCountSequence(unittest.TestCase):
 
     def test_multiple(self):
         counts = wlint.wordcounter.count_handle(["hello world",
-                                                 "goodbye world"])
+                                                 "goodbye world"],
+                                                wlint.purify.text)
         expected = ({
             "hello": 1,
             "goodbye": 1,

@@ -6,15 +6,32 @@ import wlint.plugin
 import wlint.tool
 
 
+def _add_enabled_rules(pattern, enabled_rules):
+    for (message, check_fn) in _AVAILABLE_RULES:
+        if pattern.match(message):
+            enabled_rules[message] = check_fn
+
+
 def _get_enabled_rules(enabled_rules):
     ret = {}
     rules = enabled_rules.split(",")
     for rule in rules:
         pattern = re.compile(rule.replace(".", R"\.").replace("*", ".*"))
-        for (message, check_fn) in _AVAILABLE_RULES:
-            if pattern.match(message):
-                ret[message] = check_fn
+        _add_enabled_rules(pattern, ret)
     return ret
+
+
+def _build_rms(pattern, checks):
+    rms = []
+    for message in checks:
+        if pattern.match(message):
+            rms.append(message)
+    return rms
+
+
+def _delete_rules(rms, checks):
+    for message in rms:
+        del checks[message]
 
 
 def _remove_disabled_rules(disabled_rules, checks):
@@ -22,13 +39,8 @@ def _remove_disabled_rules(disabled_rules, checks):
         if rule:  # don't deal with empty strings
             pattern = re.compile(rule.replace(
                 ".", R"\.").replace("*", ".*"))
-            rms = []
-            for message in checks:
-                if pattern.match(message):
-                    rms.append(message)
-            for message in rms:
-                del checks[message]
-
+            rms = _build_rms(pattern, checks)
+            _delete_rules(rms, checks)
     return checks
 
 
