@@ -4,8 +4,6 @@
 
 import re
 
-import wlint.purify
-
 
 def add_word(word, handle_fn):
     """
@@ -31,6 +29,7 @@ def add_words(sequence, handle_fn):
 
 def add_word_file(path, handle_fn):
     class _NewlineStrippingIterator:
+        # pylint: disable=too-few-public-methods
         def __init__(self, file_handle):
             self._iter = iter(file_handle)
 

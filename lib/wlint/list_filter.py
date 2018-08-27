@@ -2,8 +2,8 @@
 
 import operator
 import os
-import pkg_resources
 import re
+import pkg_resources
 
 import wlint.purify
 import wlint.tool
