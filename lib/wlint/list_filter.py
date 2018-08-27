@@ -1,15 +1,29 @@
 #!/usr/bin/python3
 
 import operator
+import os
 import pkg_resources
+import re
 
 import wlint.purify
 import wlint.tool
 import wlint.filter
 
+
+def _get_default_lists(path):
+    files_list = os.listdir(path)
+    pattern = re.compile("^([a-z]+)-words.txt$")
+    files = []
+    for file in files_list:
+        match = pattern.search(file)
+        if match:
+            files.append(match.group(1))
+    return sorted(files)
+
+
 _LIST_DIR = pkg_resources.resource_filename(__name__, "share/filter-lists/")
-_DEFAULT_LISTS = wlint.filter.DirectoryLists(_LIST_DIR)
-_DEFAULT_LISTS_STR = ",".join(_DEFAULT_LISTS.files)
+_DEFAULT_LISTS = _get_default_lists(_LIST_DIR)
+_DEFAULT_LISTS_STR = ",".join(_DEFAULT_LISTS)
 
 _SORTS = [
     ("alpha", "Sort output based on the actual words."),
@@ -45,17 +59,20 @@ class ListFilter(wlint.tool.Tool):
             if parsed_args.lists:
                 lists = parsed_args.lists.split(",")
                 # Read the built in lists
-                return _DEFAULT_LISTS.build_word_list(lists)
-            return wlint.filter.WordList()
+                return wlint.filter.build_word_list(_LIST_DIR, lists)
+            return {}
 
         words = _make_lists()
         # Read any extra lists
         if parsed_args.list:
-            for word_list in parsed_args.list:
-                words.addWords(word_list)
+            def _add_words(word, pattern):
+                nonlocal words
+                words[word] = pattern
 
-        # WordList is complete, so setup variables
-        filter_list = wlint.filter.Filter(words)
+            for word_list in parsed_args.list:
+                wlint.filter.add_word_file(word_list, _add_words)
+
+        # word list is complete, so setup variables
         sorter = _SORT_FNS[parsed_args.sort]
         purifier = wlint.tool.get_purifier(parsed_args)
 
@@ -66,7 +83,8 @@ class ListFilter(wlint.tool.Tool):
 
         def _process(file_handle):
             hits = []
-            filter_list.filter_sequence(
+            wlint.filter.filter_sequence(
+                words,
                 wlint.purify.PurifyingIterator(file_handle, purifier),
                 lambda word, line, col: hits.append((word, line, col)))
             _print_hits(

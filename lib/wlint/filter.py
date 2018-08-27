@@ -2,114 +2,101 @@
 
 """Types and functions to work with filter words."""
 
-import os
 import re
 
 import wlint.purify
 
 
-class WordList:
+def add_word(word, handle_fn):
+    """
+    Add a word to the list.
 
-    """A list of words to search for"""
-
-    def __init__(self):
-        self.words = {}
-
-    def add_word(self, word):
-        """Add a word to the list.
-
-        Arguments:
-        word -- the word to add"""
-        pattern = re.compile(r"\b{}\b".format(word), re.IGNORECASE)
-        self.words[word] = pattern
-
-    def add_word_sequence(self, sequence, purifier=None):
-        """Add a series of words to the word list.
-
-        Arguments:
-        sequence -- some object that can be iterated over.
-        purifier -- A function to run on each item in sequence.  This isn't
-                    needed in most cases, but can be useful if sequence is
-                    something like a file (you wouldn't want the newlines)."""
-        if not purifier:
-            purifier = wlint.purify.text
-
-        for word in sequence:
-            self.add_word(purifier(word))
+    Arguments:
+    word -- the word to add
+    """
+    pattern = re.compile(r"\b{}\b".format(word), re.IGNORECASE)
+    handle_fn(word, pattern)
 
 
-class DirectoryLists:
+def add_words(sequence, handle_fn):
+    """
+    Add a series of words to the word list.
 
-    """A collection of lists in a directory."""
-
-    def __init__(self, path):
-        """Constrcut a directory list.
-
-        Arguments:
-        path -- path to the directory"""
-        self.path = path
-        files = os.listdir(path)
-        pattern = re.compile("^([a-z]+)-words.txt$")
-        self.files = []
-        for file in files:
-            match = pattern.search(file)
-            if match:
-                self.files.append(match.group(1))
-        self.files.sort()
-
-    def build_word_list(self, word_lists):
-        """Parse built-in word lists for filtering.
-
-        Arguments:
-        word_lists -- the subset of built-in lists to use"""
-        words = WordList()
-
-        for word_list in word_lists:
-            file_path = "{}/{}-words.txt".format(self.path, word_list)
-            try:
-                with open(file_path, "r") as input_list:
-                    words.add_word_sequence(input_list, lambda t: t[:-1])
-            except FileNotFoundError:
-                raise \
-                    ValueError("'{}' is not a word list".format(file_path))
-        return words
+    Arguments:
+    sequence -- some object that can be iterated over.
+    """
+    for word in sequence:
+        add_word(word, handle_fn)
 
 
-class Filter:
+def add_word_file(path, handle_fn):
+    class _NewlineStrippingIterator:
+        def __init__(self, file_handle):
+            self._iter = iter(file_handle)
 
-    """An object to filter files."""
+        def __iter__(self):
+            return self
 
-    def __init__(self, words):
-        """Construct a Filter.
+        def __next__(self):
+            next_word = next(self._iter)
+            return next_word[:-1]
 
-        Arguments:
-        words -- the WordList to use"""
-        self.words = words
+    with open(path, "r") as input_list:
+        add_words(_NewlineStrippingIterator(input_list), handle_fn)
 
-    def filter_line(self, line, found_fn):
-        """
-        Search one line of text for any filter words.
 
-        Arguments:
-        line -- the line of text to parse
-        found_fn -- The function to call when a filter word is found.
-                    Arguments are word, lineNumber.
-        """
-        for word, pattern in self.words.words.items():
-            match = pattern.search(line)
-            while match:
-                found_fn(word, match.start())
-                match = pattern.search(line, match.end())
+def build_word_list(path, word_lists):
+    """
+    Parse built-in word lists for filtering.
 
-    def filter_sequence(self, sequence, found_fn):
-        """Parse a sequence.
+    Arguments:
+    path -- the filesystem path to find word lists
+    word_lists -- the subset of built-in lists to use
+    """
+    words = {}
 
-        Arguments:
-        sequence -- an iterable object to filter over
-        found_fn -- A function to invoke on each match.  Arguments are: word,
-                    lineNumber, column.
-        """
-        line = 0
-        for text in sequence:
-            line += 1
-            self.filter_line(text, lambda word, col: found_fn(word, line, col))
+    def _add_word(word, pattern):
+        nonlocal words
+
+        words[word] = pattern
+
+    for word_list in word_lists:
+        file_path = "{}/{}-words.txt".format(path, word_list)
+        try:
+            add_word_file(file_path, _add_word)
+        except FileNotFoundError:
+            raise \
+                ValueError("'{}' is not a word list".format(file_path))
+    return words
+
+
+def filter_text(words, text, found_fn):
+    """
+    Search text for any filter words.
+
+    Arguments:
+    words -- a dictionary of words and regex patterns to detect those words
+    text -- the text to parse
+    found_fn -- The function to call when a filter word is found.
+                Arguments are word, line_number.
+    """
+    for word, pattern in words.items():
+        match = pattern.search(text)
+        while match:
+            found_fn(word, match.start())
+            match = pattern.search(text, match.end())
+
+
+def filter_sequence(words, sequence, found_fn):
+    """Parse a sequence.
+
+    Arguments:
+    words -- a dictionary of words and regex patterns to detect those words
+    sequence -- an iterable object to filter over
+    found_fn -- A function to invoke on each match.  Arguments are: word,
+                lineNumber, column.
+    """
+    line = 0
+    for text in sequence:
+        line += 1
+        filter_text(words, text, lambda word, col: found_fn(word, line, col))
