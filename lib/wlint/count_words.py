@@ -86,7 +86,6 @@ class WordCounter(wlint.tool.Tool):
         self.add_sort(_SORTS)
 
     def execute(self, parsed_args):
-        file_count = 0
         total_words = 0
 
         key_maker = _make_case_fn(parsed_args)
@@ -125,9 +124,9 @@ class WordCounter(wlint.tool.Tool):
             total_files += 1
 
         missing_files = wlint.tool.iterate_files(parsed_args, _count_words)
-        if file_count > 1 or summarize_only:
+        if total_files > 1 or summarize_only:
             print("Total: {}".format(total_words))
-            _print_counts(sort_count(total_counts.keys()), total_counts)
+            _print_counts(sort_count(total_counts.items()), total_words)
 
         return missing_files
 
